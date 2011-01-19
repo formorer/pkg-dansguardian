@@ -1,0 +1,4406 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 05_kfreebsd.dpatch by Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Add support forGNU/kFreeBSD
+
+@DPATCH@
+diff -urNad dansguardian-2.8.0.6-antivirus-6.4.4.1~/configure dansguardian-2.8.0.6-antivirus-6.4.4.1/configure
+--- dansguardian-2.8.0.6-antivirus-6.4.4.1~/configure	2006-03-12 22:34:33.000000000 +0100
++++ dansguardian-2.8.0.6-antivirus-6.4.4.1/configure	2007-03-11 09:44:03.000000000 +0100
+@@ -68,7 +68,7 @@
+ 	Darwin*)
+ 		extendedecho='echo -e'
+ 	;;
+-	Linux*)
++	Linux* | GNU/kFreeBSD* | GNU*)
+ 		extendedecho='echo -e'
+ 	;;
+         HP-UX*)
+@@ -2703,7 +2703,7 @@
+ 		$extendedecho  "#define __ENDIANH \"$endianh\"" >>autoconf/platform.h
+ 		cat autoconf/osx.in >>Makefile
+ 	;;
+-	Linux*)
++	Linux* | GNU/kFreeBSD* | GNU*)
+ 		echo "#undef __BSD" >autoconf/platform.h
+ 		$extendedecho "#define __CONFFILE \"$prefixdir$sysconfdir\c" >>autoconf/platform.h;
+ 		echo "dansguardian.conf\"" >>autoconf/platform.h;
+@@ -2899,7 +2899,7 @@
+                 echo "exit 0" >> dansguardian.bsdv
+                 chmod u+x dansguardian.bsdv
+ 	;;
+-	Linux*)
++	Linux* | GNU/kFreeBSD* | GNU*)
+ 		if [ -f dansguardian.sysv ]; then
+                         rm -f dansguardian.sysv
+                 fi
+@@ -3890,7 +3890,7 @@
+ 	        echo "dansguardian.sh stop > /dev/null" >>logrotation
+ 	        echo "" >>logrotation
+ 	;;
+-	Linux*)
++	Linux* | GNU/kFreeBSD* | GNU*)
+ 	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
+                 echo "dansguardian stop > /dev/null" >>logrotation
+                 echo "" >>logrotation
+@@ -3947,7 +3947,7 @@
+ 	        echo "dansguardian.sh start > /dev/null" >>logrotation
+ 	        echo "" >>logrotation
+ 	;;
+-	Linux*)
++	Linux* | GNU/kFreeBSD* | GNU*)
+ 	      $extendedecho "$prefixdir$sysvdir\c" >>logrotation
+               echo "dansguardian start > /dev/null" >>logrotation
+               echo "" >>logrotation
+@@ -3988,7 +3988,7 @@
+ 	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
+ 	        echo "dansguardian.sh stop > /dev/null" >>logrotate.dansguardian
+ 	;;
+-	Linux*)
++	Linux* | GNU/kFreeBSD* | GNU*)
+               echo "    killall dansguardian > /dev/null" >>logrotate.dansguardian
+               echo "    sleep 5" >>logrotate.dansguardian
+ 	;;
+@@ -4019,7 +4019,7 @@
+ 	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
+ 	        echo "dansguardian.sh start > /dev/null" >>logrotate.dansguardian
+ 	;;
+-	Linux*)
++	Linux* | GNU/kFreeBSD* | GNU*)
+ 	      $extendedecho "    $prefixdir$bindir\c" >>logrotate.dansguardian
+               echo "dansguardian > /dev/null" >>logrotate.dansguardian
+ 	;;
+diff -urNad dansguardian-2.8.0.6-antivirus-6.4.4.1~/configure.orig dansguardian-2.8.0.6-antivirus-6.4.4.1/configure.orig
+--- dansguardian-2.8.0.6-antivirus-6.4.4.1~/configure.orig	1970-01-01 01:00:00.000000000 +0100
++++ dansguardian-2.8.0.6-antivirus-6.4.4.1/configure.orig	2006-03-12 22:34:33.000000000 +0100
+@@ -0,0 +1,4329 @@
++#!/bin/sh
++
++# Guess values for system-dependent variables and create Makefiles.
++# Generated automatically using autoconf version 2.13
++# Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
++#
++# This configure script is free software; the Free Software Foundation
++# gives unlimited permission to copy, distribute and modify it.
++
++# Defaults:
++ac_help=
++ac_default_prefix=/usr/sbin/
++# Any additions from configure.in:
++
++# Initialize some variables set by options.
++# The variables have the same names as the options, with
++# dashes changed to underlines.
++build=NONE
++cache_file=./config.cache
++exec_prefix=NONE
++host=NONE
++no_create=
++nonopt=NONE
++no_recursion=
++prefix=NONE
++program_prefix=NONE
++program_suffix=NONE
++program_transform_name=s,x,x,
++silent=
++site=
++srcdir=
++target=NONE
++verbose=
++x_includes=NONE
++x_libraries=NONE
++bindir='/usr/sbin/'
++prefixdir=''
++installprefixdir=''
++sysconfdir='/etc/dansguardian/'
++sysvdir='/etc/rc.d/init.d/'
++cgidir='/var/www/cgi-bin/'
++runas_usr='nobody'
++runas_grp='nobody'
++
++# DGAV Option Defaults
++with_grp_tmp='no'
++with_av_engines='clamav'
++
++mandir='/usr/man/'
++logdir='/var/log/dansguardian/'
++piddir='/var/run/'
++logrotatedir='/etc/logrotate.d/'
++gccver=`gcc -dumpversion | sed '1,$s/.[0-9]*$//'`
++
++case `uname -s` in
++	SunOS*)
++		extendedecho='/bin/echo'
++	;;
++	OpenBSD*)
++		extendedecho='echo -e'
++	;;
++	FreeBSD*)
++		extendedecho='echo -e'
++	;;
++	NetBSD*)
++		extendedecho='echo -e'
++	;;
++	Darwin*)
++		extendedecho='echo -e'
++	;;
++	Linux*)
++		extendedecho='echo -e'
++	;;
++        HP-UX*)
++                extendedecho='/bin/echo'
++        ;;
++esac
++
++
++# Initialize some other variables.
++subdirs=
++MFLAGS= MAKEFLAGS=
++SHELL=${CONFIG_SHELL-/bin/sh}
++# Maximum number of lines to put in a shell here document.
++ac_max_here_lines=12
++
++ac_prev=
++for ac_option
++do
++
++  # If the previous option needs an argument, assign it.
++  if test -n "$ac_prev"; then
++    eval "$ac_prev=\$ac_option"
++    ac_prev=
++    continue
++  fi
++
++  case "$ac_option" in
++  -*=*) ac_optarg=`echo "$ac_option" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
++  *) ac_optarg= ;;
++  esac
++
++  # Accept the important Cygnus configure options, so we can diagnose typos.
++
++  case "$ac_option" in
++
++  -bindir | --bindir | --bindi | --bind | --bin | --bi)
++    ac_prev=bindir ;;
++  -bindir=* | --bindir=* | --bindi=* | --bind=* | --bin=* | --bi=*)
++    bindir="$ac_optarg" ;;
++
++  -help | --help | --hel | --he)
++    # Omit some internal or obsolete options to make the list less imposing.
++    # This message is too long to be a string in the A/UX 3.1 sh.
++    cat << EOF
++Usage: configure [options]
++Options: [defaults in brackets after descriptions]
++Configuration:
++  --help                  print this message
++  --version               print the version of autoconf that created configure
++Directory and file names:
++  --prefix=DIR            prefix root path DEFAULT [$prefixdir] (no trailing /)
++  --installprefix=DIR     prefix used for the 'make install'
++                          DEFAULT [$installprefixdir] (no trailing /)
++  --bindir=DIR            user executables in DIR [$ac_default_prefix]
++  --sysconfdir=DIR        config files and data in DIR [$sysconfdir]
++  --sysvdir=DIR           startup script in DIR [$sysvdir]
++  --cgidir=DIR            cgi-bin directory in DIR [$cgidir]
++  --mandir=DIR            man documentation in DIR [$mandir]
++  --logdir=DIR            log files in DIR [$logdir]
++  --runas_usr=USER        run as user DEFAULT [$runas_usr]
++  --runas_grp=GROUP       run as group DEFAULT [$runas_grp]
++  --piddir=DIR            pid file in DIR [$piddir] (ignores prefix)
++  --logrotatedir=DIR      logrotate.d scripts go in DIR [$logrotatedir]
++  --gccver=N              version 2 or 3 [$gccver]
++
++AV Options:
++  --with-grp-tmp          run with group-accessible temp directory/files
++                          [default: disabled]
++  --with-av-engine=ENGINE compile-in support for AV engines [default: clamav]
++                          more than one engine can be specified, 
++                          like:
++                              "clamav,clamdscan"
++
++                          available engines include:
++                            clamav
++                            clamdscan
++                            kav
++                            aveserver
++                            trophie
++                            sophie
++                            icap (experimental)
++                   
++  Some influential environment variables:
++    AV_CFLAGS        C compiler flags for AV engines
++    AV_LDFLAGS       linker flags for AV engines
++
++  Use these variables to override the choices made by 'configure' or to help
++  it to find libraries and programs with nonstandard names/locations.
++
++
++Do not forget the heading *and* trailing / except for prefix and installprefix
++which only need a heading /
++The installprefix is used when you want to copy the install files somewhere
++other than their normal installation locations.  This would most often be used
++for package generation.
++EOF
++    if test -n "$ac_help"; then
++      echo "--enable and --with options recognized:$ac_help"
++    fi
++    exit 0 ;;
++
++  -runas_usr | --runas_usr)
++    ac_prev=runas_usr ;;
++  -runas_usr=* | --runas_usr=*)
++    runas_usr="$ac_optarg" ;;
++
++  -runas_grp | --runas_grp)
++    ac_prev=runas_grp ;;
++  -runas_grp=* | --runas_grp=*)
++    runas_grp="$ac_optarg" ;;
++
++  -with-grp-tmp | --with-grp-tmp)
++    with_grp_tmp="yes" ;;
++  
++  -with-av-engine | --with-av-engine)
++    ac_prev=with-av-engine ;;
++
++  -with-av-engine=* | --with-av-engine=*)
++    with_av_engines="$ac_optarg" ;;
++
++  -gccver | --gccver )
++    ac_prev=gccver ;;
++  -gccver=* | --gccver=*)
++    gccver="$ac_optarg" ;;
++
++  -logrotatedir | --logrotatedir | --logrotatedi | --logrotated | --logrotate \
++  | --logrotat | --logrota | --logrot | --logro | --logr)
++    ac_prev=logrotatedir ;;
++  -logrotatedir=* | --logrotatedir=* | --logrotatedi=* | --logrotated=* \
++  | --logrotate=* | --logrotat=* | --logrota=* | --logrot=* | --logro=* \
++  | --logr=*)
++    logrotatedir="$ac_optarg" ;;
++
++  -mandir | --mandir | --mandi | --mand | --man | --ma | --m)
++    ac_prev=mandir ;;
++  -mandir=* | --mandir=* | --mandi=* | --mand=* | --man=* | --ma=* | --m=*)
++    mandir="$ac_optarg" ;;
++
++  -piddir | --piddir | --piddi | --pidd | --pid )
++    ac_prev=piddir ;;
++  -piddir=* | --piddir=* | --piddi=* | --pidd=* | --pid=* )
++    piddir="$ac_optarg" ;;
++
++  -logdir | --logdir | --logdi | --logd | --log )
++    ac_prev=logdir ;;
++  -logdir=* | --logdir=* | --logdi=* | --logd=* | --log=* )
++    logdir="$ac_optarg" ;;
++
++  -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
++    ac_prev=sbindir ;;
++  -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
++  | --sbi=* | --sb=*)
++    sbindir="$ac_optarg" ;;
++
++  -sysconfdir | --sysconfdir | --sysconfdi | --sysconfd | --sysconf \
++  | --syscon | --sysco | --sysc)
++    ac_prev=sysconfdir ;;
++  -sysconfdir=* | --sysconfdir=* | --sysconfdi=* | --sysconfd=* | --sysconf=* \
++  | --syscon=* | --sysco=* | --sysc=*)
++    sysconfdir="$ac_optarg" ;;
++
++  -installprefix | --installprefix)
++    ac_prev=installprefixdir ;;
++  -installprefix=* | --installprefix=*)
++    installprefixdir="$ac_optarg" ;;
++
++  -prefix | --prefix)
++    ac_prev=prefixdir ;;
++  -prefix=* | --prefix=*)
++    prefixdir="$ac_optarg" ;;
++
++  -sysvdir | --sysvdir | --sysvdi | --sysvd | --sysv)
++    ac_prev=sysvdir ;;
++  -sysvdir=* | --sysvdir=* | --sysvdi=* | --sysvd=* | --sysv=*)
++    sysvdir="$ac_optarg" ;;
++
++  -cgidir | --cgidir | --cgidi | --cgid | --cgi)
++    ac_prev=cgidir ;;
++  -cgidir=* | --cgidir=* | --cgidi=* | --cgid=* | --cgi=*)
++    cgidir="$ac_optarg" ;;
++
++  -v | -verbose | --verbose | --verbos | --verbo | --verb)
++    verbose=yes ;;
++
++  -version | --version | --versio | --versi | --vers)
++    echo "configure generated by autoconf version 2.13"
++    exit 0 ;;
++
++  -with-* | --with-*)
++    ac_package=`echo $ac_option|sed -e 's/-*with-//' -e 's/=.*//'`
++    # Reject names that are not valid shell variable names.
++    if test -n "`echo $ac_package| sed 's/[-_a-zA-Z0-9]//g'`"; then
++      { echo "configure: error: $ac_package: invalid package name" 1>&2; exit 1; }
++    fi
++    ac_package=`echo $ac_package| sed 's/-/_/g'`
++    case "$ac_option" in
++      *=*) ;;
++      *) ac_optarg=yes ;;
++    esac
++    eval "with_${ac_package}='$ac_optarg'" ;;
++
++  -without-* | --without-*)
++    ac_package=`echo $ac_option|sed -e 's/-*without-//'`
++    # Reject names that are not valid shell variable names.
++    if test -n "`echo $ac_package| sed 's/[-a-zA-Z0-9_]//g'`"; then
++      { echo "configure: error: $ac_package: invalid package name" 1>&2; exit 1; }
++    fi
++    ac_package=`echo $ac_package| sed 's/-/_/g'`
++    eval "with_${ac_package}=no" ;;
++
++  --x)
++    # Obsolete; use --with-x.
++    with_x=yes ;;
++
++  -*) { echo "configure: error: $ac_option: invalid option; use --help to show usage" 1>&2; exit 1; }
++    ;;
++
++  *)
++    if test -n "`echo $ac_option| sed 's/[-a-z0-9.]//g'`"; then
++      echo "configure: warning: $ac_option: invalid host type" 1>&2
++    fi
++    if test "x$nonopt" != xNONE; then
++      { echo "configure: error: can only configure for one host and one target at a time" 1>&2; exit 1; }
++    fi
++    nonopt="$ac_option"
++    ;;
++
++  esac
++done
++
++if test -n "$ac_prev"; then
++  { echo "configure: error: missing argument to --`echo $ac_prev | sed 's/_/-/g'`" 1>&2; exit 1; }
++fi
++
++trap 'rm -fr conftest* confdefs* core core.* *.core $ac_clean_files; exit 1' 1 2 15
++
++# File descriptor usage:
++# 0 standard input
++# 1 file creation
++# 2 errors and warnings
++# 3 some systems may open it to /dev/tty
++# 4 used on the Kubota Titan
++# 6 checking for... messages and results
++# 5 compiler messages saved in config.log
++if test "$silent" = yes; then
++  exec 6>/dev/null
++else
++  exec 6>&1
++fi
++exec 5>./config.log
++
++echo "\
++This file contains any messages produced by compilers while
++running configure, to aid debugging if configure makes a mistake.
++" 1>&5
++
++# Strip out --no-create and --no-recursion so they do not pile up.
++# Also quote any args containing shell metacharacters.
++ac_configure_args=
++for ac_arg
++do
++  case "$ac_arg" in
++  -no-create | --no-create | --no-creat | --no-crea | --no-cre \
++  | --no-cr | --no-c) ;;
++  -no-recursion | --no-recursion | --no-recursio | --no-recursi \
++  | --no-recurs | --no-recur | --no-recu | --no-rec | --no-re | --no-r) ;;
++  *" "*|*"	"*|*[\[\]\~\#\$\^\&\*\(\)\{\}\\\|\;\<\>\?]*)
++  ac_configure_args="$ac_configure_args '$ac_arg'" ;;
++  *) ac_configure_args="$ac_configure_args $ac_arg" ;;
++  esac
++done
++
++# NLS nuisances.
++# Only set these to C if already set.  These must not be set unconditionally
++# because not all systems understand e.g. LANG=C (notably SCO).
++# Fixing LC_MESSAGES prevents Solaris sh from translating var values in `set'!
++# Non-C LC_CTYPE values break the ctype check.
++if test "${LANG+set}"   = set; then LANG=C;   export LANG;   fi
++if test "${LC_ALL+set}" = set; then LC_ALL=C; export LC_ALL; fi
++if test "${LC_MESSAGES+set}" = set; then LC_MESSAGES=C; export LC_MESSAGES; fi
++if test "${LC_CTYPE+set}"    = set; then LC_CTYPE=C;    export LC_CTYPE;    fi
++
++# confdefs.h avoids OS command line length limits that DEFS can exceed.
++rm -rf conftest* confdefs.h
++# AIX cpp loses on an empty file, so make sure it contains at least a newline.
++echo > confdefs.h
++
++# A filename unique to this package, relative to the directory that
++# configure is in, which we can look for to find out if srcdir is correct.
++ac_unique_file=dansguardian.cpp
++
++# Find the source files, if location was not specified.
++if test -z "$srcdir"; then
++  ac_srcdir_defaulted=yes
++  # Try the directory containing this script, then its parent.
++  ac_prog=$0
++  ac_confdir=`echo $ac_prog|sed 's%/[^/][^/]*$%%'`
++  test "x$ac_confdir" = "x$ac_prog" && ac_confdir=.
++  srcdir=$ac_confdir
++  if test ! -r $srcdir/$ac_unique_file; then
++    srcdir=..
++  fi
++else
++  ac_srcdir_defaulted=no
++fi
++if test ! -r $srcdir/$ac_unique_file; then
++  if test "$ac_srcdir_defaulted" = yes; then
++    { echo "configure: error: can not find sources in $ac_confdir or .." 1>&2; exit 1; }
++  else
++    { echo "configure: error: can not find sources in $srcdir" 1>&2; exit 1; }
++  fi
++fi
++srcdir=`echo "${srcdir}" | sed 's%\([^/]\)/*$%\1%'`
++
++# Prefer explicitly selected file to automatically selected ones.
++if test -z "$CONFIG_SITE"; then
++  if test "x$prefix" != xNONE; then
++    CONFIG_SITE="$prefix/share/config.site $prefix/etc/config.site"
++  else
++    CONFIG_SITE="$ac_default_prefix/share/config.site $ac_default_prefix/etc/config.site"
++  fi
++fi
++for ac_site_file in $CONFIG_SITE; do
++  if test -r "$ac_site_file"; then
++    echo "loading site script $ac_site_file"
++    . "$ac_site_file"
++  fi
++done
++
++if test -r "$cache_file"; then
++  echo "loading cache $cache_file"
++  . $cache_file
++else
++  echo "creating cache $cache_file"
++  > $cache_file
++fi
++
++ac_ext=c
++# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
++ac_cpp='$CPP $CPPFLAGS'
++ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
++ac_link='${CC-cc} -o conftest${ac_exeext} $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
++cross_compiling=$ac_cv_prog_cc_cross
++
++ac_exeext=
++ac_objext=o
++if (echo "testing\c"; echo 1,2,3) | grep c >/dev/null; then
++  # Stardent Vistra SVR4 grep lacks -e, says ghazi@caip.rutgers.edu.
++  if (echo -n testing; echo 1,2,3) | sed s/-n/xn/ | grep xn >/dev/null; then
++    ac_n= ac_c='
++' ac_t='	'
++  else
++    ac_n=-n ac_c= ac_t=
++  fi
++else
++  ac_n= ac_c='\c' ac_t=
++fi
++
++
++
++ac_aux_dir=
++for ac_dir in autoconf $srcdir/autoconf; do
++  if test -f $ac_dir/install-sh; then
++    ac_aux_dir=$ac_dir
++    ac_install_sh="$ac_aux_dir/install-sh -c"
++    break
++  elif test -f $ac_dir/install.sh; then
++    ac_aux_dir=$ac_dir
++    ac_install_sh="$ac_aux_dir/install.sh -c"
++    break
++  fi
++done
++if test -z "$ac_aux_dir"; then
++  { echo "configure: error: can not find install-sh or install.sh in autoconf $srcdir/autoconf" 1>&2; exit 1; }
++fi
++ac_config_guess=$ac_aux_dir/config.guess
++ac_config_sub=$ac_aux_dir/config.sub
++ac_configure=$ac_aux_dir/configure # This should be Cygnus configure.
++
++
++
++
++PACKAGE=Dansguardian
++VERSION=2
++
++
++
++if test -z "$MAKE"; then
++	MAKE=make
++	echo WARNING: No make command specified, assuming `which $MAKE`
++	echo WARNING: To specify a different make, use MAKE="<command>" $0
++fi
++
++# Extract the first word of "gcc", so it can be a program name with args.
++set dummy gcc; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:581: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  if test -n "$CC"; then
++  ac_cv_prog_CC="$CC" # Let the user override the test.
++else
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_prog_CC="gcc"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++fi
++fi
++CC="$ac_cv_prog_CC"
++if test -n "$CC"; then
++  echo "$ac_t""$CC" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++if test -z "$CC"; then
++  # Extract the first word of "cc", so it can be a program name with args.
++set dummy cc; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:611: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  if test -n "$CC"; then
++  ac_cv_prog_CC="$CC" # Let the user override the test.
++else
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_prog_rejected=no
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      if test "$ac_dir/$ac_word" = "/usr/ucb/cc"; then
++        ac_prog_rejected=yes
++	continue
++      fi
++      ac_cv_prog_CC="cc"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++if test $ac_prog_rejected = yes; then
++  # We found a bogon in the path, so make sure we never use it.
++  set dummy $ac_cv_prog_CC
++  shift
++  if test $# -gt 0; then
++    # We chose a different compiler from the bogus one.
++    # However, it has the same basename, so the bogon will be chosen
++    # first if we set CC to just the basename; use the full file name.
++    shift
++    set dummy "$ac_dir/$ac_word" "$@"
++    shift
++    ac_cv_prog_CC="$@"
++  fi
++fi
++fi
++fi
++CC="$ac_cv_prog_CC"
++if test -n "$CC"; then
++  echo "$ac_t""$CC" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++  if test -z "$CC"; then
++    case "`uname -s`" in
++    *win32* | *WIN32*)
++      # Extract the first word of "cl", so it can be a program name with args.
++set dummy cl; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:662: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  if test -n "$CC"; then
++  ac_cv_prog_CC="$CC" # Let the user override the test.
++else
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_prog_CC="cl"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++fi
++fi
++CC="$ac_cv_prog_CC"
++if test -n "$CC"; then
++  echo "$ac_t""$CC" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++ ;;
++    esac
++  fi
++  test -z "$CC" && { echo "configure: error: no acceptable cc found in \$PATH" 1>&2; exit 1; }
++fi
++
++echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works""... $ac_c" 1>&6
++echo "configure:694: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
++
++ac_ext=c
++# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
++ac_cpp='$CPP $CPPFLAGS'
++ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
++ac_link='${CC-cc} -o conftest${ac_exeext} $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
++cross_compiling=$ac_cv_prog_cc_cross
++
++cat > conftest.$ac_ext << EOF
++
++#line 705 "configure"
++#include "confdefs.h"
++
++main(){return(0);}
++EOF
++if { (eval echo configure:710: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  ac_cv_prog_cc_works=yes
++  # If we can't run a trivial program, we are probably using a cross compiler.
++  if (./conftest; exit) 2>/dev/null; then
++    ac_cv_prog_cc_cross=no
++  else
++    ac_cv_prog_cc_cross=yes
++  fi
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  ac_cv_prog_cc_works=no
++fi
++rm -fr conftest*
++ac_ext=c
++# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
++ac_cpp='$CPP $CPPFLAGS'
++ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
++ac_link='${CC-cc} -o conftest${ac_exeext} $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
++cross_compiling=$ac_cv_prog_cc_cross
++
++echo "$ac_t""$ac_cv_prog_cc_works" 1>&6
++if test $ac_cv_prog_cc_works = no; then
++  { echo "configure: error: installation or configuration problem: C compiler cannot create executables." 1>&2; exit 1; }
++fi
++echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
++echo "configure:736: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
++echo "$ac_t""$ac_cv_prog_cc_cross" 1>&6
++cross_compiling=$ac_cv_prog_cc_cross
++
++echo $ac_n "checking whether we are using GNU C""... $ac_c" 1>&6
++echo "configure:741: checking whether we are using GNU C" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_gcc'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.c <<EOF
++#ifdef __GNUC__
++  yes;
++#endif
++EOF
++if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:750: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
++  ac_cv_prog_gcc=yes
++else
++  ac_cv_prog_gcc=no
++fi
++fi
++
++echo "$ac_t""$ac_cv_prog_gcc" 1>&6
++
++if test $ac_cv_prog_gcc = yes; then
++  GCC=yes
++else
++  GCC=
++fi
++
++ac_test_CFLAGS="${CFLAGS+set}"
++ac_save_CFLAGS="$CFLAGS"
++CFLAGS=
++echo $ac_n "checking whether ${CC-cc} accepts -g""... $ac_c" 1>&6
++echo "configure:769: checking whether ${CC-cc} accepts -g" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_cc_g'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  echo 'void f(){}' > conftest.c
++if test -z "`${CC-cc} -g -c conftest.c 2>&1`"; then
++  ac_cv_prog_cc_g=yes
++else
++  ac_cv_prog_cc_g=no
++fi
++rm -f conftest*
++
++fi
++
++echo "$ac_t""$ac_cv_prog_cc_g" 1>&6
++if test "$ac_test_CFLAGS" = set; then
++  CFLAGS="$ac_save_CFLAGS"
++elif test $ac_cv_prog_cc_g = yes; then
++  if test "$GCC" = yes; then
++    CFLAGS="-g -O2 -pipe"
++  else
++    CFLAGS="-g"
++  fi
++else
++  if test "$GCC" = yes; then
++    CFLAGS="-O2 -pipe"
++  else
++    CFLAGS=
++  fi
++fi
++
++
++if test "x$CFLAGS" = "x"; then
++	if test "x$GCC" = "xyes"; then
++	  CFLAGS="-g -O2 -pipe"
++	else
++	  CFLAGS="-g"
++	fi
++fi
++
++echo $ac_n "checking for POSIXized ISC""... $ac_c" 1>&6
++echo "configure:810: checking for POSIXized ISC" >&5
++if test -d /etc/conf/kconfig.d &&
++  grep _POSIX_VERSION /usr/include/sys/unistd.h >/dev/null 2>&1
++then
++  echo "$ac_t""yes" 1>&6
++  ISC=yes # If later tests want to check for ISC.
++  cat >> confdefs.h <<\EOF
++#define _POSIX_SOURCE 1
++EOF
++
++  if test "$GCC" = yes; then
++    CC="$CC -posix"
++  else
++    CC="$CC -Xp"
++  fi
++else
++  echo "$ac_t""no" 1>&6
++  ISC=
++fi
++
++echo $ac_n "checking whether ${MAKE-make} sets \${MAKE}""... $ac_c" 1>&6
++echo "configure:831: checking whether ${MAKE-make} sets \${MAKE}" >&5
++set dummy ${MAKE-make}; ac_make=`echo "$2" | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_prog_make_${ac_make}_set'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftestmake <<\EOF
++all:
++	@echo 'ac_maketemp="${MAKE}"'
++EOF
++# GNU make sometimes prints "make[1]: Entering...", which would confuse us.
++eval `${MAKE-make} -f conftestmake 2>/dev/null | grep temp=`
++if test -n "$ac_maketemp"; then
++  eval ac_cv_prog_make_${ac_make}_set=yes
++else
++  eval ac_cv_prog_make_${ac_make}_set=no
++fi
++rm -f conftestmake
++fi
++if eval "test \"`echo '$ac_cv_prog_make_'${ac_make}_set`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  SET_MAKE=
++else
++  echo "$ac_t""no" 1>&6
++  SET_MAKE="MAKE=${MAKE-make}"
++fi
++
++# Extract the first word of "rm", so it can be a program name with args.
++set dummy rm; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:860: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_path_RM'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  case "$RM" in
++  /*)
++  ac_cv_path_RM="$RM" # Let the user override the test with a path.
++  ;;
++  ?:/*)
++  ac_cv_path_RM="$RM" # Let the user override the test with a dos path.
++  ;;
++  *)
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_path_RM="$ac_dir/$ac_word"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac
++fi
++RM="$ac_cv_path_RM"
++if test -n "$RM"; then
++  echo "$ac_t""$RM" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++# Extract the first word of "cp", so it can be a program name with args.
++set dummy cp; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:895: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_path_CP'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  case "$CP" in
++  /*)
++  ac_cv_path_CP="$CP" # Let the user override the test with a path.
++  ;;
++  ?:/*)
++  ac_cv_path_CP="$CP" # Let the user override the test with a dos path.
++  ;;
++  *)
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_path_CP="$ac_dir/$ac_word"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac
++fi
++CP="$ac_cv_path_CP"
++if test -n "$CP"; then
++  echo "$ac_t""$CP" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++# Extract the first word of "mv", so it can be a program name with args.
++set dummy mv; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:930: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_path_MV'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  case "$MV" in
++  /*)
++  ac_cv_path_MV="$MV" # Let the user override the test with a path.
++  ;;
++  ?:/*)
++  ac_cv_path_MV="$MV" # Let the user override the test with a dos path.
++  ;;
++  *)
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_path_MV="$ac_dir/$ac_word"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac
++fi
++MV="$ac_cv_path_MV"
++if test -n "$MV"; then
++  echo "$ac_t""$MV" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++# Extract the first word of "sed", so it can be a program name with args.
++set dummy sed; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:965: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_path_SED'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  case "$SED" in
++  /*)
++  ac_cv_path_SED="$SED" # Let the user override the test with a path.
++  ;;
++  ?:/*)
++  ac_cv_path_SED="$SED" # Let the user override the test with a dos path.
++  ;;
++  *)
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_path_SED="$ac_dir/$ac_word"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac
++fi
++SED="$ac_cv_path_SED"
++if test -n "$SED"; then
++  echo "$ac_t""$SED" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++# Extract the first word of "ar", so it can be a program name with args.
++set dummy ar; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:1000: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_path_AR'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  case "$AR" in
++  /*)
++  ac_cv_path_AR="$AR" # Let the user override the test with a path.
++  ;;
++  ?:/*)
++  ac_cv_path_AR="$AR" # Let the user override the test with a dos path.
++  ;;
++  *)
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_path_AR="$ac_dir/$ac_word"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac
++fi
++AR="$ac_cv_path_AR"
++if test -n "$AR"; then
++  echo "$ac_t""$AR" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++for ac_prog in 'bison -y' byacc
++do
++# Extract the first word of "$ac_prog", so it can be a program name with args.
++set dummy $ac_prog; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:1037: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_YACC'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  if test -n "$YACC"; then
++  ac_cv_prog_YACC="$YACC" # Let the user override the test.
++else
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_prog_YACC="$ac_prog"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++fi
++fi
++YACC="$ac_cv_prog_YACC"
++if test -n "$YACC"; then
++  echo "$ac_t""$YACC" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++test -n "$YACC" && break
++done
++test -n "$YACC" || YACC="yacc"
++
++# Find a good install program.  We prefer a C program (faster),
++# so one script is as good as another.  But avoid the broken or
++# incompatible versions:
++# SysV /etc/install, /usr/sbin/install
++# SunOS /usr/etc/install
++# IRIX /sbin/install
++# AIX /bin/install
++# AIX 4 /usr/bin/installbsd, which doesn't work without a -g flag
++# AFS /usr/afsws/bin/install, which mishandles nonexistent args
++# SVR4 /usr/ucb/install, which tries to use the nonexistent group "staff"
++# ./install, which can be erroneously created by make from ./install.sh.
++echo $ac_n "checking for a BSD compatible install""... $ac_c" 1>&6
++echo "configure:1079: checking for a BSD compatible install" >&5
++if test -z "$INSTALL"; then
++if eval "test \"`echo '$''{'ac_cv_path_install'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++    IFS="${IFS= 	}"; ac_save_IFS="$IFS"; IFS=":"
++  for ac_dir in $PATH; do
++    # Account for people who put trailing slashes in PATH elements.
++    case "$ac_dir/" in
++    /|./|.//|/etc/*|/usr/sbin/*|/usr/etc/*|/sbin/*|/usr/afsws/bin/*|/usr/ucb/*) ;;
++    *)
++      # OSF1 and SCO ODT 3.0 have their own names for install.
++      # Don't use installbsd from OSF since it installs stuff as root
++      # by default.
++      for ac_prog in ginstall scoinst install; do
++        if test -f $ac_dir/$ac_prog; then
++	  if test $ac_prog = install &&
++            grep dspmsg $ac_dir/$ac_prog >/dev/null 2>&1; then
++	    # AIX install.  It has an incompatible calling convention.
++	    :
++	  else
++	    ac_cv_path_install="$ac_dir/$ac_prog -c"
++	    break 2
++	  fi
++	fi
++      done
++      ;;
++    esac
++  done
++  IFS="$ac_save_IFS"
++
++fi
++  if test "${ac_cv_path_install+set}" = set; then
++    INSTALL="$ac_cv_path_install"
++  else
++    # As a last resort, use the slow shell script.  We don't cache a
++    # path for INSTALL within a source directory, because that will
++    # break other packages using the cache if that directory is
++    # removed, or if the path is relative.
++    INSTALL="$ac_install_sh"
++  fi
++fi
++echo "$ac_t""$INSTALL" 1>&6
++
++# Use test -z because SunOS4 sh mishandles braces in ${var-val}.
++# It thinks the first close brace ends the variable substitution.
++test -z "$INSTALL_PROGRAM" && INSTALL_PROGRAM='${INSTALL}'
++
++test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL_PROGRAM}'
++
++test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
++
++# Extract the first word of "flex", so it can be a program name with args.
++set dummy flex; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:1134: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_LEX'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  if test -n "$LEX"; then
++  ac_cv_prog_LEX="$LEX" # Let the user override the test.
++else
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_prog_LEX="flex"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++  test -z "$ac_cv_prog_LEX" && ac_cv_prog_LEX="lex"
++fi
++fi
++LEX="$ac_cv_prog_LEX"
++if test -n "$LEX"; then
++  echo "$ac_t""$LEX" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++if test -z "$LEXLIB"
++then
++  case "$LEX" in
++  flex*) ac_lib=fl ;;
++  *) ac_lib=l ;;
++  esac
++  echo $ac_n "checking for yywrap in -l$ac_lib""... $ac_c" 1>&6
++echo "configure:1168: checking for yywrap in -l$ac_lib" >&5
++ac_lib_var=`echo $ac_lib'_'yywrap | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-l$ac_lib  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 1176 "configure"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char yywrap();
++
++int main() {
++yywrap()
++; return 0; }
++EOF
++if { (eval echo configure:1187: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  LEXLIB="-l$ac_lib"
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++fi
++
++# Extract the first word of "ranlib", so it can be a program name with args.
++set dummy ranlib; ac_word=$2
++echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
++echo "configure:1212: checking for $ac_word" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_RANLIB'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  if test -n "$RANLIB"; then
++  ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
++else
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
++  ac_dummy="$PATH"
++  for ac_dir in $ac_dummy; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/$ac_word; then
++      ac_cv_prog_RANLIB="ranlib"
++      break
++    fi
++  done
++  IFS="$ac_save_ifs"
++  test -z "$ac_cv_prog_RANLIB" && ac_cv_prog_RANLIB=":"
++fi
++fi
++RANLIB="$ac_cv_prog_RANLIB"
++if test -n "$RANLIB"; then
++  echo "$ac_t""$RANLIB" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++
++if test "$libexecdir" = '${exec_prefix}/libexec' &&
++   test "$localstatedir" = '${prefix}/var'; then
++        libexecdir='${bindir}'
++        localstatedir='${prefix}'
++fi
++
++echo $ac_n "checking for socket in -lsocket""... $ac_c" 1>&6
++echo "configure:1247: checking for socket in -lsocket" >&5
++ac_lib_var=`echo socket'_'socket | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-lsocket  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 1255 "configure"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char socket();
++
++int main() {
++socket()
++; return 0; }
++EOF
++if { (eval echo configure:1266: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_lib=HAVE_LIB`echo socket | sed -e 's/[^a-zA-Z0-9_]/_/g' \
++    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_lib 1
++EOF
++
++  LIBS="-lsocket $LIBS"
++
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++
++# The GNU linker requires the -export-dynamic option to make
++# all symbols visible in the dynamic symbol table.
++hold_ldflags=$LDFLAGS
++echo $ac_n "checking for the ld -export-dynamic flag""... $ac_c" 1>&6
++echo "configure:1395: checking for the ld -export-dynamic flag" >&5
++LDFLAGS="${LDFLAGS} -Wl,-export-dynamic"
++cat > conftest.$ac_ext <<EOF
++#line 1398 "configure"
++#include "confdefs.h"
++
++int main() {
++int i;
++; return 0; }
++EOF
++if { (eval echo configure:1405: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  found=yes
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  found=no
++fi
++rm -f conftest*
++LDFLAGS=$hold_ldflags
++echo "$ac_t""$found" 1>&6
++if test $found = yes; then
++	LDFLAGS="${LDFLAGS} -Wl,-export-dynamic"
++fi
++
++echo $ac_n "checking for compiler option to produce PIC""... $ac_c" 1>&6
++echo "configure:1422: checking for compiler option to produce PIC" >&5
++if test "$ac_cv_prog_gcc" = "yes"; then
++	echo "$ac_t""gcc: -fPIC -DPIC -shared" 1>&6
++	PICFLAGS="-fPIC -DPIC -shared"
++else
++	case `uname -s` in
++	SunOS*)
++		echo "$ac_t""SunOS - Assuming Sun Workshop compiler: -KPIC -DPIC -G" 1>&6
++		PICFLAGS="-KPIC -DPIC -G"
++	;;
++	*)
++		echo "$ac_t""no" 1>&6
++		{ echo "configure: error: could not find a way to produce position independent code." 1>&2; exit 1; }
++	;;
++	esac
++fi
++
++
++
++echo $ac_n "checking for crypt""... $ac_c" 1>&6
++echo "configure:1442: checking for crypt" >&5
++if eval "test \"`echo '$''{'ac_cv_func_crypt'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 1447 "configure"
++#include "confdefs.h"
++/* System header to define __stub macros and hopefully few prototypes,
++    which can conflict with char crypt(); below.  */
++#include <assert.h>
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char crypt();
++
++int main() {
++
++/* The GNU C library defines this for functions which it implements
++    to always fail with ENOSYS.  Some functions are actually named
++    something starting with __ and the normal name is an alias.  */
++#if defined (__stub_crypt) || defined (__stub___crypt)
++choke me
++#else
++crypt();
++#endif
++
++; return 0; }
++EOF
++if { (eval echo configure:1470: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_func_crypt=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_func_crypt=no"
++fi
++rm -f conftest*
++fi
++
++if eval "test \"`echo '$ac_cv_func_'crypt`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  :
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for crypt in -ldescrypt""... $ac_c" 1>&6
++echo "configure:1488: checking for crypt in -ldescrypt" >&5
++ac_lib_var=`echo descrypt'_'crypt | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-ldescrypt  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 1496 "configure"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char crypt();
++
++int main() {
++crypt()
++; return 0; }
++EOF
++if { (eval echo configure:1507: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_lib=HAVE_LIB`echo descrypt | sed -e 's/^a-zA-Z0-9_/_/g' \
++    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_lib 1
++EOF
++
++  LIBS="-ldescrypt $LIBS"
++
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for crypt in -lcrypt""... $ac_c" 1>&6
++echo "configure:1533: checking for crypt in -lcrypt" >&5
++ac_lib_var=`echo crypt'_'crypt | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-lcrypt  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 1541 "configure"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char crypt();
++
++int main() {
++crypt()
++; return 0; }
++EOF
++if { (eval echo configure:1552: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_lib=HAVE_LIB`echo crypt | sed -e 's/^a-zA-Z0-9_/_/g' \
++    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_lib 1
++EOF
++
++  LIBS="-lcrypt $LIBS"
++
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++fi
++
++fi
++
++
++unset ac_cv_lib_intl_gettext
++for ac_func in gettext
++do
++echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
++echo "configure:1588: checking for $ac_func" >&5
++if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 1593 "configure"
++#include "confdefs.h"
++/* System header to define __stub macros and hopefully few prototypes,
++    which can conflict with char $ac_func(); below.  */
++#include <assert.h>
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char $ac_func();
++
++int main() {
++
++/* The GNU C library defines this for functions which it implements
++    to always fail with ENOSYS.  Some functions are actually named
++    something starting with __ and the normal name is an alias.  */
++#if defined (__stub_$ac_func) || defined (__stub___$ac_func)
++choke me
++#else
++$ac_func();
++#endif
++
++; return 0; }
++EOF
++if { (eval echo configure:1616: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_func_$ac_func=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_func_$ac_func=no"
++fi
++rm -f conftest*
++fi
++
++if eval "test \"`echo '$ac_cv_func_'$ac_func`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_func=HAVE_`echo $ac_func | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_func 1
++EOF
++
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for gettext in -lintl""... $ac_c" 1>&6
++echo "configure:1638: checking for gettext in -lintl" >&5
++ac_lib_var=`echo intl'_'gettext | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-lintl  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 1646 "configure"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char gettext();
++
++int main() {
++gettext()
++; return 0; }
++EOF
++if { (eval echo configure:1657: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_lib=HAVE_LIB`echo intl | sed -e 's/^a-zA-Z0-9_/_/g' \
++    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_lib 1
++EOF
++
++  LIBS="-lintl $LIBS"
++
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++fi
++done
++
++if test "$ac_cv_func_gettext" = "no" -a "$ac_cv_lib_intl_gettext" = "no"; then
++        echo $ac_n "checking in /usr/local/lib ""... $ac_c" 1>&6
++echo "configure:1689: checking in /usr/local/lib " >&5
++	unset ac_cv_lib_intl_gettext
++        SAVEDLDFLAGS=$LDFLAGS
++        SAVEDCFLAGS=$CFLAGS
++	LDFLAGS="$LDFLAGS -L/usr/local/lib"
++	CPPFLAGS="$CPPFLAGS -I/usr/local/include"
++	echo $ac_n "checking for gettext in -lintl""... $ac_c" 1>&6
++echo "configure:1696: checking for gettext in -lintl" >&5
++ac_lib_var=`echo intl'_'gettext | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-lintl  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 1704 "configure"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char gettext();
++
++int main() {
++gettext()
++; return 0; }
++EOF
++if { (eval echo configure:1715: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_lib=HAVE_LIB`echo intl | sed -e 's/[^a-zA-Z0-9_]/_/g' \
++    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_lib 1
++EOF
++
++  LIBS="-lintl $LIBS"
++
++else
++  echo "$ac_t""no" 1>&6
++LDFLAGS=$SAVEDLDFLAGS; CFLAG=$SAVEDCFLAGS
++fi
++
++fi
++
++echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
++echo "configure:1746: checking how to run the C preprocessor" >&5
++# On Suns, sometimes $CPP names a directory.
++if test -n "$CPP" && test -d "$CPP"; then
++  CPP=
++fi
++case `uname -s` in
++	Darwin*)
++		CPP=/usr/bin/cpp
++	;;
++esac
++if test -z "$CPP"; then
++if eval "test \"`echo '$''{'ac_cv_prog_CPP'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++    # This must be in double quotes, not single quotes, because CPP may get
++  # substituted into the Makefile and "${CC-cc}" will confuse make.
++  CPP="${CC-cc} -E"
++  # On the NeXT, cc -E runs the code through the compiler's parser,
++  # not just through cpp.
++  cat > conftest.$ac_ext <<EOF
++#line 1761 "configure"
++#include "confdefs.h"
++#include <assert.h>
++Syntax Error
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:1767: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  :
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  CPP="${CC-cc} -E -traditional-cpp"
++  cat > conftest.$ac_ext <<EOF
++#line 1778 "configure"
++#include "confdefs.h"
++#include <assert.h>
++Syntax Error
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:1784: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  :
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  CPP="${CC-cc} -nologo -E"
++  cat > conftest.$ac_ext <<EOF
++#line 1795 "configure"
++#include "confdefs.h"
++#include <assert.h>
++Syntax Error
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:1801: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  :
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  CPP=/lib/cpp
++fi
++rm -f conftest*
++fi
++rm -f conftest*
++fi
++rm -f conftest*
++  ac_cv_prog_CPP="$CPP"
++fi
++  CPP="$ac_cv_prog_CPP"
++else
++  ac_cv_prog_CPP="$CPP"
++fi
++echo "$ac_t""$CPP" 1>&6
++
++echo $ac_n "checking for ANSI C header files""... $ac_c" 1>&6
++echo "configure:1826: checking for ANSI C header files" >&5
++if eval "test \"`echo '$''{'ac_cv_header_stdc'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 1831 "configure"
++#include "confdefs.h"
++#include <stdlib.h>
++#include <stdarg.h>
++#include <string.h>
++#include <float.h>
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:1839: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  rm -rf conftest*
++  ac_cv_header_stdc=yes
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  ac_cv_header_stdc=no
++fi
++rm -f conftest*
++
++if test $ac_cv_header_stdc = yes; then
++  # SunOS 4.x string.h does not declare mem*, contrary to ANSI.
++cat > conftest.$ac_ext <<EOF
++#line 1856 "configure"
++#include "confdefs.h"
++#include <string.h>
++EOF
++if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
++  egrep "memchr" >/dev/null 2>&1; then
++  :
++else
++  rm -rf conftest*
++  ac_cv_header_stdc=no
++fi
++rm -f conftest*
++
++fi
++
++if test $ac_cv_header_stdc = yes; then
++  # ISC 2.0.2 stdlib.h does not declare free, contrary to ANSI.
++cat > conftest.$ac_ext <<EOF
++#line 1874 "configure"
++#include "confdefs.h"
++#include <stdlib.h>
++EOF
++if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
++  egrep "free" >/dev/null 2>&1; then
++  :
++else
++  rm -rf conftest*
++  ac_cv_header_stdc=no
++fi
++rm -f conftest*
++
++fi
++
++if test $ac_cv_header_stdc = yes; then
++  # /bin/cc in Irix-4.0.5 gets non-ANSI ctype macros unless using -ansi.
++if test "$cross_compiling" = yes; then
++  :
++else
++  cat > conftest.$ac_ext <<EOF
++#line 1895 "configure"
++#include "confdefs.h"
++#include <ctype.h>
++#define ISLOWER(c) (islower(c))
++#define TOUPPER(c) (toupper(c))
++#define XOR(e, f) (((e) && !(f)) || (!(e) && (f)))
++
++int main () { int i; for (i = 0; i < 256; i++)
++if (XOR (islower (i), ISLOWER (i)) || toupper (i) != TOUPPER (i)) exit(2);
++exit (0); }
++
++EOF
++if { (eval echo configure:1906: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
++then
++  :
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -fr conftest*
++  ac_cv_header_stdc=no
++fi
++rm -fr conftest*
++fi
++
++fi
++fi
++
++echo "$ac_t""$ac_cv_header_stdc" 1>&6
++if test $ac_cv_header_stdc = yes; then
++  cat >> confdefs.h <<\EOF
++#define STDC_HEADERS 1
++EOF
++
++fi
++
++for ac_hdr in sys/param.h unistd.h errno.h string.h strings.h sys/syslog.h stdlib.h stddef.h getopt.h
++do
++ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
++echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
++echo "configure:1933: checking for $ac_hdr" >&5
++if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 1938 "configure"
++#include "confdefs.h"
++#include <$ac_hdr>
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:1943: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=yes"
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=no"
++fi
++rm -f conftest*
++fi
++if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_hdr=HAVE_`echo $ac_hdr | sed 'y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_hdr 1
++EOF
++
++else
++  echo "$ac_t""no" 1>&6
++fi
++done
++
++
++
++
++echo $ac_n "checking whether string.h and strings.h may both be included""... $ac_c" 1>&6
++echo "configure:1973: checking whether string.h and strings.h may both be included" >&5
++if eval "test \"`echo '$''{'gcc_cv_header_string'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 1978 "configure"
++#include "confdefs.h"
++#include <string.h>
++#include <strings.h>
++int main() {
++
++; return 0; }
++EOF
++if { (eval echo configure:1986: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
++  rm -rf conftest*
++  gcc_cv_header_string=yes
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  gcc_cv_header_string=no
++fi
++rm -f conftest*
++fi
++
++echo "$ac_t""$gcc_cv_header_string" 1>&6
++if test $gcc_cv_header_string = yes; then
++ cat >> confdefs.h <<\EOF
++#define STRING_WITH_STRINGS 1
++EOF
++
++fi
++
++
++
++
++
++
++	echo $ac_n "checking for socklen_t""... $ac_c" 1>&6
++echo "configure:2012: checking for socklen_t" >&5
++	if eval "test \"`echo '$''{'have_socklen_t'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++
++		cat > conftest.$ac_ext <<EOF
++#line 2018 "configure"
++#include "confdefs.h"
++#include <sys/types.h>
++			#include <sys/socket.h>
++int main() {
++socklen_t xxx = 75;
++; return 0; }
++EOF
++if { (eval echo configure:2026: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
++  rm -rf conftest*
++  have_socklen_t=yes
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  have_socklen_t=no
++fi
++rm -f conftest*
++
++fi
++
++	echo "$ac_t""$have_socklen_t" 1>&6
++	if test "$have_socklen_t" = yes; then
++		cat >> confdefs.h <<\EOF
++#define HAVE_SOCKLEN_T 1
++EOF
++
++	fi
++
++
++ac_safe=`echo "stdarg.h" | sed 'y%./+-%__p_%'`
++echo $ac_n "checking for stdarg.h""... $ac_c" 1>&6
++echo "configure:2050: checking for stdarg.h" >&5
++if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2055 "configure"
++#include "confdefs.h"
++#include <stdarg.h>
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:2060: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=yes"
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=no"
++fi
++rm -f conftest*
++fi
++if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  :
++else
++  echo "$ac_t""no" 1>&6
++{ echo "configure: error: ** stdarg.h could not be found - Dansguardian will not compile without it **" 1>&2; exit 1; }
++fi
++
++
++nlist_lib=""
++echo $ac_n "checking for nlist""... $ac_c" 1>&6
++echo "configure:2085: checking for nlist" >&5
++if eval "test \"`echo '$''{'ac_cv_func_nlist'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2090 "configure"
++#include "confdefs.h"
++/* System header to define __stub macros and hopefully few prototypes,
++    which can conflict with char nlist(); below.  */
++#include <assert.h>
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char nlist();
++
++int main() {
++
++/* The GNU C library defines this for functions which it implements
++    to always fail with ENOSYS.  Some functions are actually named
++    something starting with __ and the normal name is an alias.  */
++#if defined (__stub_nlist) || defined (__stub___nlist)
++choke me
++#else
++nlist();
++#endif
++
++; return 0; }
++EOF
++if { (eval echo configure:2113: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_func_nlist=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_func_nlist=no"
++fi
++rm -f conftest*
++fi
++
++if eval "test \"`echo '$ac_cv_func_'nlist`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  :
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for nlist in -ldl""... $ac_c" 1>&6
++echo "configure:2131: checking for nlist in -ldl" >&5
++ac_lib_var=`echo dl'_'nlist | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-ldl  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 2139 "configure"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char nlist();
++
++int main() {
++nlist()
++; return 0; }
++EOF
++if { (eval echo configure:2150: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  nlist_lib="-ldl"
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for nlist in -lelf""... $ac_c" 1>&6
++echo "configure:2169: checking for nlist in -lelf" >&5
++ac_lib_var=`echo elf'_'nlist | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-lelf  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 2177 "configure"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char nlist();
++
++int main() {
++nlist()
++; return 0; }
++EOF
++if { (eval echo configure:2188: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  nlist_lib="-lelf"
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++
++fi
++
++
++fi
++
++
++for ac_func in strlcat strlcpy
++do
++echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
++echo "configure:2219: checking for $ac_func" >&5
++if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2224 "configure"
++#include "confdefs.h"
++/* System header to define __stub macros and hopefully few prototypes,
++    which can conflict with char $ac_func(); below.  */
++#include <assert.h>
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char $ac_func();
++
++int main() {
++
++/* The GNU C library defines this for functions which it implements
++    to always fail with ENOSYS.  Some functions are actually named
++    something starting with __ and the normal name is an alias.  */
++#if defined (__stub_$ac_func) || defined (__stub___$ac_func)
++choke me
++#else
++$ac_func();
++#endif
++
++; return 0; }
++EOF
++if { (eval echo configure:2247: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_func_$ac_func=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_func_$ac_func=no"
++fi
++rm -f conftest*
++fi
++
++if eval "test \"`echo '$ac_cv_func_'$ac_func`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_func=HAVE_`echo $ac_func | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_func 1
++EOF
++
++else
++  echo "$ac_t""no" 1>&6
++fi
++done
++
++for ac_func in daemon
++do
++echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
++echo "configure:2274: checking for $ac_func" >&5
++if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2279 "configure"
++#include "confdefs.h"
++/* System header to define __stub macros and hopefully few prototypes,
++    which can conflict with char $ac_func(); below.  */
++#include <assert.h>
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char $ac_func();
++
++int main() {
++
++/* The GNU C library defines this for functions which it implements
++    to always fail with ENOSYS.  Some functions are actually named
++    something starting with __ and the normal name is an alias.  */
++#if defined (__stub_$ac_func) || defined (__stub___$ac_func)
++choke me
++#else
++$ac_func();
++#endif
++
++; return 0; }
++EOF
++if { (eval echo configure:2302: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_func_$ac_func=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_func_$ac_func=no"
++fi
++rm -f conftest*
++fi
++
++if eval "test \"`echo '$ac_cv_func_'$ac_func`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++    ac_tr_func=HAVE_`echo $ac_func | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
++  cat >> confdefs.h <<EOF
++#define $ac_tr_func 1
++EOF
++
++else
++  echo "$ac_t""no" 1>&6
++fi
++done
++
++
++ac_safe=`echo "libelf/nlist.h" | sed 'y%./+-%__p_%'`
++echo $ac_n "checking for libelf/nlist.h""... $ac_c" 1>&6
++echo "configure:2329: checking for libelf/nlist.h" >&5
++if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2334 "configure"
++#include "confdefs.h"
++#include <libelf/nlist.h>
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:2339: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=yes"
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=no"
++fi
++rm -f conftest*
++fi
++if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++   nlist_h="libelf/nlist.h"
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++ac_safe=`echo "elf/nlist.h" | sed 'y%./+-%__p_%'`
++echo $ac_n "checking for elf/nlist.h""... $ac_c" 1>&6
++echo "configure:2362: checking for elf/nlist.h" >&5
++if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2367 "configure"
++#include "confdefs.h"
++#include <elf/nlist.h>
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:2372: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=yes"
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=no"
++fi
++rm -f conftest*
++fi
++if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++   nlist_h="elf/nlist.h"
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++ac_safe=`echo "nlist.h" | sed 'y%./+-%__p_%'`
++echo $ac_n "checking for nlist.h""... $ac_c" 1>&6
++echo "configure:2395: checking for nlist.h" >&5
++if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2400 "configure"
++#include "confdefs.h"
++#include <nlist.h>
++EOF
++ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
++{ (eval echo configure:2405: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=yes"
++else
++  echo "$ac_err" >&5
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=no"
++fi
++rm -f conftest*
++fi
++if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++   nlist_h="nlist.h"
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++echo $ac_n "checking for extra underscores prepended to symbol names""... $ac_c" 1>&6
++echo "configure:2430: checking for extra underscores prepended to symbol names" >&5
++if eval "test \"`echo '$''{'symbol_underscores'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++fi
++
++
++# Check whether --enable-poll or --disable-poll was given.
++if test "${enable_poll+set}" = set; then
++  enableval="$enable_poll"
++
++  case "$enableval" in
++  yes)
++    echo "Forcing poll() to be enabled"
++    ac_cv_func_poll='yes'
++    ;;
++  no)
++    echo "Forcing poll() to be disabled"
++    ac_cv_func_poll='no'
++    ;;
++  esac
++
++fi
++
++
++# Check whether --enable-select or --disable-select was given.
++if test "${enable_select+set}" = set; then
++  enableval="$enable_select"
++
++  case "$enableval" in
++  yes)
++    echo "Forcing select() to be enabled"
++    ac_cv_func_select='yes'
++    ;;
++  no)
++    echo "Forcing select() to be disabled"
++    ac_cv_func_select='no'
++    ;;
++  esac
++
++fi
++
++
++# Check whether --enable-kqueue or --disable-kqueue was given.
++if test "${enable_kqueue+set}" = set; then
++  enableval="$enable_kqueue"
++
++  case "$enableval" in
++  yes)
++    echo "Forcing kqueue() to be enabled"
++    ac_cv_func_kqueue='yes'
++    ;;
++  no)
++    echo "Forcing kqueue() to be disabled"
++    ac_cv_func_kqueue='no'
++  ;;
++esac
++
++fi
++
++
++# Check whether --enable-devpoll or --disable-devpoll was given.
++if test "${enable_devpoll+set}" = set; then
++  enableval="$enable_devpoll"
++
++  case "$enableval" in
++  yes)
++    echo "Forcing devpoll to be enabled"
++    ac_cv_func_devpoll='yes'
++    ;;
++  no)
++    echo "Forcing devpoll to be disabled"
++    ac_cv_func_devpoll='no'
++  ;;
++esac
++
++fi
++
++
++if test $ac_cv_prog_gcc = yes; then
++    echo $ac_n "checking whether ${CC-cc} needs -traditional""... $ac_c" 1>&6
++echo "configure:2577: checking whether ${CC-cc} needs -traditional" >&5
++if eval "test \"`echo '$''{'ac_cv_prog_gcc_traditional'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++    ac_pattern="Autoconf.*'x'"
++  cat > conftest.$ac_ext <<EOF
++#line 2583 "configure"
++#include "confdefs.h"
++#include <sgtty.h>
++Autoconf TIOCGETP
++EOF
++if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
++  egrep "$ac_pattern" >/dev/null 2>&1; then
++  rm -rf conftest*
++  ac_cv_prog_gcc_traditional=yes
++else
++  rm -rf conftest*
++  ac_cv_prog_gcc_traditional=no
++fi
++rm -f conftest*
++
++
++  if test $ac_cv_prog_gcc_traditional = no; then
++    cat > conftest.$ac_ext <<EOF
++#line 2601 "configure"
++#include "confdefs.h"
++#include <termio.h>
++Autoconf TCGETA
++EOF
++if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
++  egrep "$ac_pattern" >/dev/null 2>&1; then
++  rm -rf conftest*
++  ac_cv_prog_gcc_traditional=yes
++fi
++rm -f conftest*
++
++  fi
++fi
++
++echo "$ac_t""$ac_cv_prog_gcc_traditional" 1>&6
++  if test $ac_cv_prog_gcc_traditional = yes; then
++    CC="$CC -traditional"
++  fi
++fi
++
++
++echo $ac_n "checking for how to include files in Makefile""... $ac_c" 1>&6
++echo "configure:2673: checking for how to include files in Makefile" >&5
++
++echo $ac_n "checking for u_int32_t""... $ac_c" 1>&6
++echo "configure:2694: checking for u_int32_t" >&5
++if eval "test \"`echo '$''{'ac_cv_type_u_int32_t'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2699 "configure"
++#include "confdefs.h"
++#include <sys/types.h>
++#if STDC_HEADERS
++#include <stdlib.h>
++#include <stddef.h>
++#endif
++EOF
++if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
++  egrep "(^|[^a-zA-Z_0-9])u_int32_t[^a-zA-Z_0-9]" >/dev/null 2>&1; then
++  rm -rf conftest*
++  ac_cv_type_u_int32_t=yes
++else
++  rm -rf conftest*
++  ac_cv_type_u_int32_t=no
++fi
++rm -f conftest*
++
++fi
++echo "$ac_t""$ac_cv_type_u_int32_t" 1>&6
++if test $ac_cv_type_u_int32_t = no; then
++  cat >> confdefs.h <<\EOF
++#define u_int32_t unsigned long
++EOF
++
++fi
++
++
++rm -f conftest conftest.f
++echo $ac_n "checking for poll""... $ac_c" 1>&6
++echo "configure:2729: checking for poll" >&5
++if eval "test \"`echo '$''{'ac_cv_func_poll'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2734 "configure"
++#include "confdefs.h"
++/* System header to define __stub macros and hopefully few prototypes,
++    which can conflict with char poll(); below.  */
++#include <assert.h>
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++char poll();
++
++int main() {
++
++/* The GNU C library defines this for functions which it implements
++    to always fail with ENOSYS.  Some functions are actually named
++    something starting with __ and the normal name is an alias.  */
++#if defined (__stub_poll) || defined (__stub___poll)
++choke me
++#else
++poll();
++#endif
++
++; return 0; }
++EOF
++if { (eval echo configure:2757: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_func_poll=yes"
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_func_poll=no"
++fi
++rm -f conftest*
++fi
++
++if eval "test \"`echo '$ac_cv_func_'poll`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  ac_cv_func_poll='yes'
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++
++# Check whether --enable-ipv6 or --disable-ipv6 was given.
++if test "${enable_ipv6+set}" = set; then
++  enableval="$enable_ipv6"
++
++  case $enableval in
++  yes)
++    ac_cv_ipv6="yes"
++    ;;
++  no)
++    ac_cv_ipv6="no"
++    ;;
++  esac
++
++fi
++
++
++if test "$ac_cv_ipv6" = "yes" ; then
++	cat >> confdefs.h <<\EOF
++#define IPV6 1
++EOF
++
++	echo "Using IPv6 support"
++fi
++
++
++trap '' 1 2 15
++cat > confcache <<\EOF
++# This file is a shell script that caches the results of configure
++# tests run on this system so they can be shared between configure
++# scripts and configure runs.  It is not useful on other systems.
++# If it contains results you don't want to keep, you may remove or edit it.
++#
++# By default, configure uses ./config.cache as the cache file,
++# creating it if it does not exist already.  You can give configure
++# the --cache-file=FILE option to use a different cache file; that is
++# what configure does when it calls configure scripts in
++# subdirectories, so they share the cache.
++# Giving --cache-file=/dev/null disables caching, for debugging configure.
++# config.status only pays attention to the cache file if you give it the
++# --recheck option to rerun configure.
++#
++EOF
++# The following way of writing the cache mishandles newlines in values,
++# but we know of no workaround that is simple, portable, and efficient.
++# So, don't put newlines in cache variables' values.
++# Ultrix sh set writes to stderr and can't be redirected directly,
++# and sets the high bit in the cache file unless we assign to the vars.
++(set) 2>&1 |
++  case `(ac_space=' '; set | grep ac_space) 2>&1` in
++  *ac_space=\ *)
++    # `set' does not quote correctly, so add quotes (double-quote substitution
++    # turns \\\\ into \\, and sed turns \\ into \).
++    sed -n \
++      -e "s/'/'\\\\''/g" \
++      -e "s/^\\([a-zA-Z0-9_]*_cv_[a-zA-Z0-9_]*\\)=\\(.*\\)/\\1=\${\\1='\\2'}/p"
++    ;;
++  *)
++    # `set' quotes correctly as required by POSIX, so do not add quotes.
++    sed -n -e 's/^\([a-zA-Z0-9_]*_cv_[a-zA-Z0-9_]*\)=\(.*\)/\1=${\1=\2}/p'
++    ;;
++  esac >> confcache
++if cmp -s $cache_file confcache; then
++  :
++else
++  if test -w $cache_file; then
++    echo "updating cache $cache_file"
++    cat confcache > $cache_file
++  else
++    echo "not updating unwritable cache $cache_file"
++  fi
++fi
++rm -f confcache
++
++echo "Generating platform specific Makefile..."
++if [ -f Makefile ]; then
++	rm -f Makefile
++fi
++
++# DansGuardian specific settings.
++cat Makefile.in >Makefile
++$extendedecho "INSTALLPREFIX = $installprefixdir" >>Makefile
++$extendedecho "PREFIX = $prefixdir" >>Makefile
++$extendedecho "CONFFILELOCATION = \${PREFIX}$sysconfdir" >>Makefile
++$extendedecho "BINARYLOCATION = \${PREFIX}$bindir" >>Makefile
++$extendedecho "SYSVLOCATION = \${PREFIX}$sysvdir" >>Makefile
++$extendedecho "CGIBINLOCATION = \${PREFIX}$cgidir" >>Makefile
++$extendedecho "MANUALFILES = \${PREFIX}$mandir" >>Makefile
++$extendedecho "LOGLOCATION = \${PREFIX}$logdir" >>Makefile
++$extendedecho "LOGROTATELOCATION = \${PREFIX}$logrotatedir" >>Makefile
++echo "PROXYUSER = $runas_usr" >>Makefile
++echo "PROXYGROUP = $runas_grp" >>Makefile
++echo "PIDDIR = $piddir" >>Makefile
++echo "libdir = /usr/lib" >>Makefile
++
++
++# Added by Aecio F. Neto (afn@harvest.com.br) - Harvest Consultoria (http://www.harvest.com.br)
++# additional changes by m4d
++#
++av_libs=""
++av_objs=""
++for av_eng in `echo "$with_av_engines" | sed -e 's/,/ /g'`; do
++	case $av_eng in
++		clamav)
++			echo "With AV engine: $av_eng"
++			CLAMAV_LDFLAGS=$(pkg-config libclamav --libs)
++			av_libs="$av_libs $CLAMAV_LDFLAGS"
++			av_objs="$av_objs ClamAV.o"
++			;;
++		clamdscan)
++			echo "With AV engine: $av_eng"
++			av_objs="$av_objs ClamDScan.o"
++			;;
++		kav)
++			echo "With AV engine: $av_eng"
++			av_libs="$av_libs -lkavclient"
++			av_objs="$av_objs KAV.o"
++			;;
++		trophie)
++			echo "With AV engine: $av_eng"
++			av_libs="$av_libs"
++			av_objs="$av_objs TrophieScan.o"
++			;;
++		sophie)
++			echo "With AV engine: $av_eng"
++			av_libs="$av_libs"
++			av_objs="$av_objs SophieScan.o"
++			;;
++		aveserver)
++			echo "With AV engine: $av_eng"
++			av_libs="$av_libs"
++			av_objs="$av_objs KAVScan.o"
++			;;
++		icap)
++			echo "With AV engine: $av_eng"
++			av_libs="$av_libs"
++			av_objs="$av_objs ICAPScan.o"
++			;;
++		*)
++			echo "Error: Unknown AV engine. ($av_eng)"
++			exit 1
++			;;
++	esac
++done
++
++## check for libesmtp-config
++which libesmtp-config >/dev/null 2>&1
++if [ $? = 0 ]; then
++		# libesmtp-config command found
++		LIBESMTP_LDFLAGS=$(libesmtp-config --libs)
++		AV_LDFLAGS="$AV_LDFLAGS $LIBESMTP_LDFLAGS"
++		LIBESMTP_CFLAGS=$(libesmtp-config --cflags)
++		AV_CFLAGS="$AV_CFLAGS $LIBESMTP_CFLAGS"
++else
++		echo "*** WARNING: libesmtp-config command not found!"
++		echo "*** WARNING: fallback to default libesmtp build-flags"
++		AV_LDFLAGS="$AV_LDFLAGS -lesmtp"
++fi
++
++## write AV build flags
++#
++echo "AV_LIBS	= $av_libs" >> Makefile
++echo "AV_OBJS	= $av_objs" >> Makefile
++
++if [ "x$AV_LDFLAGS" != "x" ]; then
++	echo "AV_LDFLAGS	= $AV_LDFLAGS" >> Makefile
++fi
++
++if [ "x$AV_CFLAGS" != "x" ]; then
++	echo "AV_CFLAGS	= $AV_CFLAGS" >> Makefile
++fi
++
++
++echo "Generating platform.h...."
++
++if [ -f /usr/include/endian.h ]; then
++	endianh='/usr/include/endian.h'
++else
++  if [ -f /usr/include/sys/endian.h ]; then
++	endianh='/usr/include/sys/endian.h'
++else
++  if [ -f /usr/include/ppc/endian.h ]; then
++	endianh='/usr/include/ppc/endian.h'
++else
++	endianh='<endian.h>'	
++fi
++fi
++fi
++
++case `uname -s` in
++	SunOS*)
++		echo "#undef __BSD" >autoconf/platform.h
++		echo "#define __SOLARIS" >>autoconf/platform.h
++		$extendedecho "#define __CONFFILE \"$prefixdir$sysconfdir\c" >>autoconf/platform.h;
++		echo "dansguardian.conf\"" >>autoconf/platform.h;
++		cat autoconf/solaris.in >>Makefile
++		case "$gccver" in
++			3*|4*)
++				echo "#define __GCCVER3 1" >>autoconf/platform.h
++			;;
++		esac
++		$extendedecho  "#define __PIDDIR \"$piddir\"" >>autoconf/platform.h
++		$extendedecho  "#define __LOGLOCATION \"$logdir\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYUSER \"$runas_usr\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYGROUP \"$runas_grp\"" >>autoconf/platform.h
++		$extendedecho  "#define __ENDIANH \"$endianh\"" >>autoconf/platform.h
++	;;
++	OpenBSD*)
++		echo "#define __OBSD 1" >autoconf/platform.h
++		echo "#define __BSD 1" >>autoconf/platform.h
++		$extendedecho "#define __CONFFILE \"$prefixdir$sysconfdir\c" >>autoconf/platform.h;
++		echo "dansguardian.conf\"" >>autoconf/platform.h;
++		cat autoconf/obsd.in >>Makefile
++		case "$gccver" in
++			3*|4*)
++				echo "#define __GCCVER3 1" >>autoconf/platform.h
++			;;
++		esac
++		$extendedecho  "#define __PIDDIR \"$piddir\"" >>autoconf/platform.h
++		$extendedecho  "#define __LOGLOCATION \"$logdir\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYUSER \"$runas_usr\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYGROUP \"$runas_grp\"" >>autoconf/platform.h
++		$extendedecho  "#define __ENDIANH \"$endianh\"" >>autoconf/platform.h
++	;;
++	FreeBSD*)
++		echo "#define __BSD 1" >autoconf/platform.h
++		$extendedecho "#define __CONFFILE \"$prefixdir$sysconfdir\c" >>autoconf/platform.h;
++		echo "dansguardian.conf\"" >>autoconf/platform.h;
++		cat autoconf/fbsd.in >>Makefile
++		case "$gccver" in
++			3*|4*)
++				echo "#define __GCCVER3 1" >>autoconf/platform.h
++			;;
++		esac
++		$extendedecho  "#define __PIDDIR \"$piddir\"" >>autoconf/platform.h
++		$extendedecho  "#define __LOGLOCATION \"$logdir\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYUSER \"$runas_usr\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYGROUP \"$runas_grp\"" >>autoconf/platform.h
++		$extendedecho  "#define __ENDIANH \"$endianh\"" >>autoconf/platform.h
++	;;
++	NetBSD*)
++		echo "#define __BSD 1" >autoconf/platform.h
++		$extendedecho "#define __CONFFILE \"$prefixdir$sysconfdir\c" >>autoconf/platform.h;
++		echo "dansguardian.conf\"" >>autoconf/platform.h;
++		cat autoconf/nbsd.in >>Makefile
++		case "$gccver" in
++			3*|4*)
++				echo "#define __GCCVER3 1" >>autoconf/platform.h
++			;;
++		esac
++		$extendedecho  "#define __PIDDIR \"$piddir\"" >>autoconf/platform.h
++		$extendedecho  "#define __LOGLOCATION \"$logdir\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYUSER \"$runas_usr\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYGROUP \"$runas_grp\"" >>autoconf/platform.h
++		$extendedecho  "#define __ENDIANH \"$endianh\"" >>autoconf/platform.h
++	;;
++	Darwin*)
++		echo "#define __BSD 1" >autoconf/platform.h
++		echo "#define __DARWIN 1" >>autoconf/platform.h
++		echo "#define __GCCVER3 1" >>autoconf/platform.h
++		echo "#ifndef _BSD_SOCKLEN_T_" >>autoconf/platform.h
++		echo "    #define _BSD_SOCKLEN_T_ size_t" >>autoconf/platform.h
++		echo "#endif" >>autoconf/platform.h
++		$extendedecho "#define __CONFFILE \"$prefixdir$sysconfdir\c" >>autoconf/platform.h;
++		echo "dansguardian.conf\"" >>autoconf/platform.h;
++		$extendedecho  "#define __PIDDIR \"$piddir\"" >>autoconf/platform.h
++		$extendedecho  "#define __LOGLOCATION \"$logdir\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYUSER \"$runas_usr\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYGROUP \"$runas_grp\"" >>autoconf/platform.h
++		$extendedecho  "#define __ENDIANH \"$endianh\"" >>autoconf/platform.h
++		cat autoconf/osx.in >>Makefile
++	;;
++	Linux*)
++		echo "#undef __BSD" >autoconf/platform.h
++		$extendedecho "#define __CONFFILE \"$prefixdir$sysconfdir\c" >>autoconf/platform.h;
++		echo "dansguardian.conf\"" >>autoconf/platform.h;
++		cat autoconf/linux.in >>Makefile
++		case "$gccver" in
++			3*|4*)
++				echo "#define __GCCVER3 1" >>autoconf/platform.h
++			;;
++		esac
++		$extendedecho  "#define __PIDDIR \"$piddir\"" >>autoconf/platform.h
++		$extendedecho  "#define __LOGLOCATION \"$logdir\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYUSER \"$runas_usr\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYGROUP \"$runas_grp\"" >>autoconf/platform.h
++		$extendedecho  "#define __ENDIANH \"$endianh\"" >>autoconf/platform.h
++	;;
++	HP-UX*)
++                echo "#define __HPUX 1" >autoconf/platform.h
++                echo "#define __BSD 1" >>autoconf/platform.h
++                $extendedecho "#define __CONFFILE \"$prefixdir$sysconfdir\c" >>autoconf/platform.h;
++                echo "dansguardian.conf\"" >>autoconf/platform.h;
++                cat autoconf/hpux.in >>Makefile
++                echo "#define __GCCVER3 1" >>autoconf/platform.h
++                $extendedecho  "#define __PIDDIR \"$piddir\"" >>autoconf/platform.h
++	        $extendedecho  "#define __LOGLOCATION \"$logdir\"" >>autoconf/platform.h
++	        $extendedecho  "#define __PROXYUSER \"$runas_usr\"" >>autoconf/platform.h
++		$extendedecho  "#define __PROXYGROUP \"$runas_grp\"" >>autoconf/platform.h
++		$extendedecho  "#define __ENDIANH \"$endianh\"" >>autoconf/platform.h
++        ;;
++esac
++
++
++# Added by m4d
++#
++av_libs=""
++av_objs=""
++for av_eng in `echo "$with_av_engines" | sed -e 's/,/ /g'`; do
++	case $av_eng in
++		clamav)
++			echo "#define __CLAMAV 1" >> autoconf/platform.h
++			;;
++		clamdscan)
++			echo "#define __CLAMDSCAN 1" >> autoconf/platform.h
++			;;
++		kav)
++			echo "#define __KAV 1" >> autoconf/platform.h
++			;;
++		trophie)
++			echo "#define __TROPHIE 1" >> autoconf/platform.h
++			;;
++		sophie)
++			echo "#define __SOPHIE 1" >> autoconf/platform.h
++			;;
++		aveserver)
++			echo "#define __KAV5 1" >> autoconf/platform.h
++			;;
++		icap)
++			echo "#define __ICAP 1" >> autoconf/platform.h
++			;;
++		*)
++			echo "Error: Unknown AV engine. ($av_eng)"
++			exit 1
++			;;
++	esac
++done
++
++# set this (eg. the first specified) as the default engine in dansguardian.conf
++av_eng=`echo $with_av_engines | cut -d, -f 1`
++
++if [ $with_grp_tmp = "yes" ]; then
++	echo "#define __WITH_GRP_ACCESS_TEMP 1" >>autoconf/platform.h
++fi
++
++
++echo "Generating platform specific start/stop script..."
++
++case `uname -s` in
++	SunOS*)
++		if [ -f dansguardian.solv ]; then
++                        rm -f dansguardian.solv
++                fi
++                cat autoconf/solv.in > dansguardian.solv
++                echo "CONFFILELOCATION=$prefixdir$sysconfdir" >> dansguardian.solv
++		echo "BINARYLOCATION=$prefixdir$bindir" >> dansguardian.solv
++		echo "PIDDIR=$piddir" >> dansguardian.solv
++		cat autoconf/solv.in2 >> dansguardian.solv
++                chmod u+x dansguardian.solv
++	;;
++	OpenBSD*)
++		if [ -f dansguardian.bsdv ]; then
++                        rm -f dansguardian.bsdv
++                fi
++                cat autoconf/bsdv.in > dansguardian.bsdv
++                $extendedecho "        [ -x $prefixdir$bindir\c" >> dansguardian.bsdv
++                $extendedecho "dansguardian ] && $prefixdir$bindir\c" >> dansguardian.bsdv
++                echo "dansguardian > /dev/null && $extendedecho ' dansguardian\c'" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "stop)" >> dansguardian.bsdv
++                $extendedecho "        $prefixdir$bindir\c" >> dansguardian.bsdv
++                echo "dansguardian -q" >> dansguardian.bsdv
++                $extendedecho "        [ -r /tmp/\c" >> dansguardian.bsdv
++                echo ".dguardianipc ] && $extendedecho ' dansguardian\c'" >> dansguardian.bsdv
++                echo "        rm -f /tmp/.dguardianipc" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "restart)" >> dansguardian.bsdv
++                echo "        \$0 stop" >> dansguardian.bsdv
++                echo "        \$0 start" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "*)" >> dansguardian.bsdv
++                echo "        echo \"Usage: `basename \$0` {start|stop|restart}\" >&2" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "esac" >> dansguardian.bsdv
++                echo "exit 0" >> dansguardian.bsdv
++                chmod u+x dansguardian.bsdv
++	;;
++	FreeBSD*)
++		if [ -f dansguardian.bsdv ]; then
++                        rm -f dansguardian.bsdv
++                fi
++                cat autoconf/bsdv.in > dansguardian.bsdv
++                $extendedecho "        [ -x $prefixdir$bindir\c" >> dansguardian.bsdv
++                $extendedecho "dansguardian ] && $prefixdir$bindir\c" >> dansguardian.bsdv
++                echo "dansguardian > /dev/null && $extendedecho ' dansguardian\c'" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "stop)" >> dansguardian.bsdv
++                $extendedecho "        $prefixdir$bindir\c" >> dansguardian.bsdv
++                echo "dansguardian -q" >> dansguardian.bsdv
++                $extendedecho "        [ -r /tmp/\c" >> dansguardian.bsdv
++                echo ".dguardianipc ] && $extendedecho ' dansguardian\c'" >> dansguardian.bsdv
++                echo "        rm -f /tmp/.dguardianipc" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "restart)" >> dansguardian.bsdv
++                echo "        \$0 stop" >> dansguardian.bsdv
++                echo "        \$0 start" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "*)" >> dansguardian.bsdv
++                echo "        echo \"Usage: `basename \$0` {start|stop|restart}\" >&2" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "esac" >> dansguardian.bsdv
++                echo "exit 0" >> dansguardian.bsdv
++                chmod u+x dansguardian.bsdv
++	;;
++	NetBSD*)
++		if [ -f dansguardian.bsdv ]; then
++                        rm -f dansguardian.bsdv
++                fi
++                cat autoconf/bsdv.in > dansguardian.bsdv
++                $extendedecho "        [ -x $prefixdir$bindir\c" >> dansguardian.bsdv
++                $extendedecho "dansguardian ] && $prefixdir$bindir\c" >> dansguardian.bsdv
++                echo "dansguardian > /dev/null && $extendedecho ' dansguardian\c'" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "stop)" >> dansguardian.bsdv
++                $extendedecho "        $prefixdir$bindir\c" >> dansguardian.bsdv
++                echo "dansguardian -q" >> dansguardian.bsdv
++                $extendedecho "        [ -r /tmp/\c" >> dansguardian.bsdv
++                echo ".dguardianipc ] && $extendedecho ' dansguardian\c'" >> dansguardian.bsdv
++                echo "        rm -f /tmp/.dguardianipc" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "restart)" >> dansguardian.bsdv
++                echo "        \$0 stop" >> dansguardian.bsdv
++                echo "        \$0 start" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "*)" >> dansguardian.bsdv
++                echo "        echo \"Usage: `basename \$0` {start|stop|restart}\" >&2" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "esac" >> dansguardian.bsdv
++                echo "exit 0" >> dansguardian.bsdv
++                chmod u+x dansguardian.bsdv
++	;;
++	Darwin*)
++		if [ -f dansguardian.bsdv ]; then
++                        rm -f dansguardian.bsdv
++                fi
++                cat autoconf/bsdv.in > dansguardian.bsdv
++                $extendedecho "        [ -x $prefixdir$bindir\c" >> dansguardian.bsdv
++                $extendedecho "dansguardian ] && $prefixdir$bindir\c" >> dansguardian.bsdv
++                echo "dansguardian > /dev/null && $extendedecho ' dansguardian\c'" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "stop)" >> dansguardian.bsdv
++                $extendedecho "        $prefixdir$bindir\c" >> dansguardian.bsdv
++                echo "dansguardian -q" >> dansguardian.bsdv
++                $extendedecho "        [ -r /tmp/\c" >> dansguardian.bsdv
++                echo ".dguardianipc ] && $extendedecho ' dansguardian\c'" >> dansguardian.bsdv
++                echo "        rm -f /tmp/.dguardianipc" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "restart)" >> dansguardian.bsdv
++                echo "        \$0 stop" >> dansguardian.bsdv
++                echo "        \$0 start" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "*)" >> dansguardian.bsdv
++                echo "        echo \"Usage: `basename \$0` {start|stop|restart}\" >&2" >> dansguardian.bsdv
++                echo "        ;;" >> dansguardian.bsdv
++                echo "esac" >> dansguardian.bsdv
++                echo "exit 0" >> dansguardian.bsdv
++                chmod u+x dansguardian.bsdv
++	;;
++	Linux*)
++		if [ -f dansguardian.sysv ]; then
++                        rm -f dansguardian.sysv
++                fi
++                cat autoconf/sysv.in > dansguardian.sysv
++                $extendedecho "$piddir\c" >> dansguardian.sysv
++                echo "dansguardian.pid" >> dansguardian.sysv
++                $extendedecho "# config: $prefixdir$sysconfdir\c" >> dansguardian.sysv
++                echo "dansguardian.conf" >> dansguardian.sysv
++                echo "" >> dansguardian.sysv
++                echo "CONFFILELOCATION=$prefixdir$sysconfdir" >> dansguardian.sysv
++		echo "BINARYLOCATION=$prefixdir$bindir" >> dansguardian.sysv
++		echo "PIDDIR=$piddir" >> dansguardian.sysv
++                echo "" >> dansguardian.sysv
++                cat autoconf/sysv.in2 >> dansguardian.sysv
++                chmod u+x dansguardian.sysv
++	;;
++	HP-UX*)
++                if [ -f dansguardian.sysv ]; then
++                         rm -f dansguardian.sysv
++                fi
++                cat autoconf/sysv.in > dansguardian.sysv
++                $extendedecho "$piddir\c" >> dansguardian.sysv
++                echo "dansguardian.pid" >> dansguardian.sysv
++                $extendedecho "# config: $prefixdir$sysconfdir\c" >> dansguardian.sysv
++                echo "dansguardian.conf" >> dansguardian.sysv
++                echo "" >> dansguardian.sysv
++                echo "CONFFILELOCATION=$prefixdir$sysconfdir" >> dansguardian.sysv
++                echo "BINARYLOCATION=$prefixdir$bindir" >> dansguardian.sysv
++                echo "PIDDIR=$piddir" >> dansguardian.sysv
++                echo "" >> dansguardian.sysv
++                cat autoconf/sysv.in2 >> dansguardian.sysv
++                chmod u+x dansguardian.sysv
++       ;;
++esac
++
++
++
++echo "Generating platform specific dansguardian.conf..."
++if [ -f dansguardian.conf ]; then
++	rm -f dansguardian.conf
++fi
++
++echo "# DansGuardian config file for version 2.8.0 with Anti-Virus plug-in 6.4.3" >dansguardian.conf
++echo "# **NOTE** as of version 2.7.5 most of the list files are now in dansguardianf1.conf" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Web Access Denied Reporting (does not affect logging)" >>dansguardian.conf
++echo "#" >>dansguardian.conf
++echo "# -1 = log, but do not block - Stealth mode" >>dansguardian.conf
++echo "#  0 = just say 'Access Denied'" >>dansguardian.conf
++echo "#  1 = report why but not what denied phrase" >>dansguardian.conf
++echo "#  2 = report fully" >>dansguardian.conf
++echo "#  3 = use HTML template file (accessdeniedaddress ignored) - recommended" >>dansguardian.conf
++echo "#" >>dansguardian.conf
++echo "reportinglevel = 3" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Language dir where languages are stored for internationalisation." >>dansguardian.conf
++echo "# The HTML template within this dir is only used when reportinglevel" >>dansguardian.conf
++echo "# is set to 3. When used, DansGuardian will display the HTML file instead of" >>dansguardian.conf
++echo "# using the perl cgi script.  This option is faster, cleaner" >>dansguardian.conf
++echo "# and easier to customise the access denied page." >>dansguardian.conf
++echo "# The language file is used no matter what setting however." >>dansguardian.conf
++echo "#" >>dansguardian.conf
++$extendedecho "languagedir = '$prefixdir$sysconfdir\c" >>dansguardian.conf
++echo "languages'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# language to use from languagedir." >>dansguardian.conf
++echo "language = 'ukenglish'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Logging Settings" >>dansguardian.conf
++echo "#" >>dansguardian.conf
++echo "# 0 = none  1 = just denied  2 = all text based  3 = all requests" >>dansguardian.conf
++echo "# DG   default: 2" >>dansguardian.conf
++echo "# DGAV default: 3" >>dansguardian.conf
++echo "loglevel = 3" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Log Exception Hits" >>dansguardian.conf
++echo "# Log if an exception (user, ip, URL, phrase) is matched and so" >>dansguardian.conf
++echo "# the page gets let through.  Can be useful for diagnosing" >>dansguardian.conf
++echo "# why a site gets through the filter.  on | off" >>dansguardian.conf
++echo "logexceptionhits = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Log File Format" >>dansguardian.conf
++echo "# 1 = DansGuardian format        2 = CSV-style format" >>dansguardian.conf
++echo "# 3 = Squid Log File Format      4 = Tab delimited" >>dansguardian.conf
++echo "logfileformat = 1" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Log file location" >>dansguardian.conf
++echo "# " >>dansguardian.conf
++echo "# Defines the log directory and filename." >>dansguardian.conf
++echo "#loglocation = '/var/log/dansguardian/access.log'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Network Settings" >>dansguardian.conf
++echo "# " >>dansguardian.conf
++echo "# the IP that DansGuardian listens on.  If left blank DansGuardian will" >>dansguardian.conf
++echo "# listen on all IPs.  That would include all NICs, loopback, modem, etc." >>dansguardian.conf
++echo "# Normally you would have your firewall protecting this, but if you want" >>dansguardian.conf
++echo "# you can limit it to only 1 IP.  Yes only one." >>dansguardian.conf
++echo "filterip =" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# the port that DansGuardian listens to." >>dansguardian.conf
++echo "filterport = 8080" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# the ip of the proxy (default is the loopback - i.e. this server)" >>dansguardian.conf
++echo "proxyip = 127.0.0.1" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# the port DansGuardian connects to proxy on" >>dansguardian.conf
++echo "proxyport = 3128" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# accessdeniedaddress is the address of your web server to which the cgi" >>dansguardian.conf
++echo "# dansguardian reporting script was copied" >>dansguardian.conf
++echo "# Do NOT change from the default if you are not using the cgi." >>dansguardian.conf
++echo "#" >>dansguardian.conf
++echo "accessdeniedaddress = 'http://YOURSERVER.YOURDOMAIN/cgi-bin/dansguardian.pl'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# Non standard delimiter (only used with accessdeniedaddress)" >>dansguardian.conf
++echo "# Default is enabled but to go back to the original standard mode dissable it." >>dansguardian.conf
++echo "nonstandarddelimiter = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Banned image replacement" >>dansguardian.conf
++echo "# Images that are banned due to domain/url/etc reasons including those" >>dansguardian.conf
++echo "# in the adverts blacklists can be replaced by an image.  This will," >>dansguardian.conf
++echo "# for example, hide images from advert sites and remove broken image" >>dansguardian.conf
++echo "# icons from banned domains." >>dansguardian.conf
++echo "# 0 = off" >>dansguardian.conf
++echo "# 1 = on (default)" >>dansguardian.conf
++echo "usecustombannedimage = 1" >>dansguardian.conf
++$extendedecho "custombannedimagefile = '$prefixdir$sysconfdir\c" >>dansguardian.conf
++echo "transparent1x1.gif'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Filter groups options" >>dansguardian.conf
++echo "# filtergroups sets the number of filter groups. A filter group is a set of content" >>dansguardian.conf
++echo "# filtering options you can apply to a group of users.  The value must be 1 or more." >>dansguardian.conf
++echo "# DansGuardian will automatically look for dansguardianfN.conf where N is the filter" >>dansguardian.conf
++echo "# group.  To assign users to groups use the filtergroupslist option.  All users default" >>dansguardian.conf
++echo "# to filter group 1.  You must have some sort of authentication to be able to map users" >>dansguardian.conf
++echo "# to a group.  The more filter groups the more copies of the lists will be in RAM so" >>dansguardian.conf
++echo "# use as few as possible." >>dansguardian.conf
++echo "filtergroups = 1" >>dansguardian.conf
++$extendedecho "filtergroupslist = '$prefixdir$sysconfdir\c" >>dansguardian.conf
++echo "filtergroupslist'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Authentication files location" >>dansguardian.conf
++$extendedecho "bannediplist = '$prefixdir$sysconfdir\c" >>dansguardian.conf
++echo "bannediplist'" >>dansguardian.conf
++$extendedecho "exceptioniplist = '$prefixdir$sysconfdir\c" >>dansguardian.conf
++echo "exceptioniplist'" >>dansguardian.conf
++$extendedecho "banneduserlist = '$prefixdir$sysconfdir\c" >>dansguardian.conf
++echo "banneduserlist'" >>dansguardian.conf
++$extendedecho "exceptionuserlist = '$prefixdir$sysconfdir\c" >>dansguardian.conf
++echo "exceptionuserlist'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Show weighted phrases found" >>dansguardian.conf
++echo "# If enabled then the phrases found that made up the total which excedes" >>dansguardian.conf
++echo "# the naughtyness limit will be logged and, if the reporting level is" >>dansguardian.conf
++echo "# high enough, reported. on | off" >>dansguardian.conf
++echo "showweightedfound = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Weighted phrase mode" >>dansguardian.conf
++echo "# There are 3 possible modes of operation:" >>dansguardian.conf
++echo "# 0 = off = do not use the weighted phrase feature." >>dansguardian.conf
++echo "# 1 = on, normal = normal weighted phrase operation." >>dansguardian.conf
++echo "# 2 = on, singular = each weighted phrase found only counts once on a page." >>dansguardian.conf
++echo "#" >>dansguardian.conf
++echo "weightedphrasemode = 2" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Positive result caching for text URLs" >>dansguardian.conf
++echo "# Caches good pages so they don't need to be scanned again" >>dansguardian.conf
++echo "# 0 = off (recommended for ISPs with users with disimilar browsing)" >>dansguardian.conf
++echo "# 1000 = recommended for most users (DG)" >>dansguardian.conf
++echo "# 3000 = recommended when urlcacheonly is on (DGAV)" >>dansguardian.conf
++echo "# 5000 = suggested max upper limit" >>dansguardian.conf
++echo "urlcachenumber = 3000" >>dansguardian.conf
++echo "#" >>dansguardian.conf
++echo "# Age before they are stale and should be ignored in seconds" >>dansguardian.conf
++echo "# 0 = never" >>dansguardian.conf
++echo "# 900 = recommended = 15 mins" >>dansguardian.conf
++echo "urlcacheage = 900" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Smart and Raw phrase content filtering options" >>dansguardian.conf
++echo "# Smart is where the multiple spaces and HTML are removed before phrase filtering" >>dansguardian.conf
++echo "# Raw is where the raw HTML including meta tags are phrase filtered" >>dansguardian.conf
++echo "# CPU usage can be effectively halved by using setting 0 or 1" >>dansguardian.conf
++echo "# 0 = raw only" >>dansguardian.conf
++echo "# 1 = smart only" >>dansguardian.conf
++echo "# 2 = both (default)" >>dansguardian.conf
++echo "phrasefiltermode = 2" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Lower casing options" >>dansguardian.conf
++echo "# When a document is scanned the uppercase letters are converted to lower case" >>dansguardian.conf
++echo "# in order to compare them with the phrases.  However this can break Big5 and" >>dansguardian.conf
++echo "# other 16-bit texts.  If needed preserve the case.  As of version 2.7.0 accented" >>dansguardian.conf
++echo "# characters are supported." >>dansguardian.conf
++echo "# 0 = force lower case (default)" >>dansguardian.conf
++echo "# 1 = do not change case" >>dansguardian.conf
++echo "preservecase = 0" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Hex decoding options" >>dansguardian.conf
++echo "# When a document is scanned it can optionally convert %XX to chars." >>dansguardian.conf
++echo "# If you find documents are getting past the phrase filtering due to encoding" >>dansguardian.conf
++echo "# then enable.  However this can break Big5 and other 16-bit texts." >>dansguardian.conf
++echo "# 0 = disabled (default)" >>dansguardian.conf
++echo "# 1 = enabled" >>dansguardian.conf
++echo "hexdecodecontent = 0" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Force Quick Search rather than DFA search algorithm" >>dansguardian.conf
++echo "# The current DFA implementation is not totally 16-bit character compatible" >>dansguardian.conf
++echo "# but is used by default as it handles large phrase lists much faster." >>dansguardian.conf
++echo "# If you wish to use a large number of 16-bit character phrases then" >>dansguardian.conf
++echo "# enable this option." >>dansguardian.conf
++echo "# 0 = off (default)" >>dansguardian.conf
++echo "# 1 = on (Big5 compatible)" >>dansguardian.conf
++echo "forcequicksearch = 0" >>dansguardian.conf
++
++
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Reverse lookups for banned site and URLs." >>dansguardian.conf
++echo "# If set to on, DansGuardian will look up the forward DNS for an IP URL" >>dansguardian.conf
++echo "# address and search for both in the banned site and URL lists.  This would" >>dansguardian.conf
++echo "# prevent a user from simply entering the IP for a banned address." >>dansguardian.conf
++echo "# It will reduce searching speed somewhat so unless you have a local caching" >>dansguardian.conf
++echo "# DNS server, leave it off and use the Blanket IP Block option in the" >>dansguardian.conf
++echo "# bannedsitelist file instead." >>dansguardian.conf
++echo "reverseaddresslookups = off" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# Reverse lookups for banned and exception IP lists." >>dansguardian.conf
++echo "# If set to on, DansGuardian will look up the forward DNS for the IP" >>dansguardian.conf
++echo "# of the connecting computer.  This means you can put in hostnames in" >>dansguardian.conf
++echo "# the exceptioniplist and bannediplist." >>dansguardian.conf
++echo "# It will reduce searching speed somewhat so unless you have a local DNS server, " >>dansguardian.conf
++echo "# leave it off." >>dansguardian.conf
++echo "reverseclientiplookups = off" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# Build bannedsitelist and bannedurllist cache files." >>dansguardian.conf
++echo "# This will compare the date stamp of the list file with the date stamp of" >>dansguardian.conf
++echo "# the cache file and will recreate as needed." >>dansguardian.conf
++echo "# If a bsl or bul .processed file exists, then that will be used instead." >>dansguardian.conf
++echo "# It will increase process start speed by 300%.  On slow computers this will" >>dansguardian.conf
++echo "# be significant.  Fast computers do not need this option. on | off" >>dansguardian.conf
++echo "createlistcachefiles = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# POST protection (web upload and forms)" >>dansguardian.conf
++echo "# does not block forms without any file upload, i.e. this is just for" >>dansguardian.conf
++echo "# blocking or limiting uploads" >>dansguardian.conf
++echo "# measured in kibibytes after MIME encoding and header bumph" >>dansguardian.conf
++echo "# use 0 for a complete block" >>dansguardian.conf
++echo "# use higher (e.g. 512 = 512Kbytes) for limiting" >>dansguardian.conf
++echo "# use -1 for no blocking" >>dansguardian.conf
++echo "#maxuploadsize = 512" >>dansguardian.conf
++echo "#maxuploadsize = 0" >>dansguardian.conf
++echo "maxuploadsize = -1" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# Max content filter page size" >>dansguardian.conf
++echo "# Sometimes web servers label binary files as text which can be very" >>dansguardian.conf
++echo "# large which causes a huge drain on memory and cpu resources." >>dansguardian.conf
++echo "# To counter this, you can limit the size of the document to be" >>dansguardian.conf
++echo "# filtered and get it to just pass it straight through." >>dansguardian.conf
++echo "# This setting also applies to content regular expression modification." >>dansguardian.conf
++echo "# The size is in Kibibytes - eg 2048 = 2Mb" >>dansguardian.conf
++echo "# use 0 for no limit" >>dansguardian.conf
++echo "maxcontentfiltersize = 256" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# Username identification methods (used in logging)" >>dansguardian.conf
++echo "# You can have as many methods as you want and not just one.  The first one" >>dansguardian.conf
++echo "# will be used then if no username is found, the next will be used." >>dansguardian.conf
++echo "# * proxyauth is for when basic proxy authentication is used (no good for" >>dansguardian.conf
++echo "#   transparent proxying)." >>dansguardian.conf
++echo "# * ntlm is for when the proxy supports the MS NTLM authentication" >>dansguardian.conf
++echo "#   protocol.  (Only works with IE5.5 sp1 and later).  **NOT IMPLEMENTED**" >>dansguardian.conf
++echo "# * ident is for when the others don't work.  It will contact the computer" >>dansguardian.conf
++echo "#   that the connection came from and try to connect to an identd server" >>dansguardian.conf
++echo "#   and query it for the user owner of the connection." >>dansguardian.conf
++echo "usernameidmethodproxyauth = on" >>dansguardian.conf
++echo "usernameidmethodntlm = off # **NOT IMPLEMENTED**" >>dansguardian.conf
++echo "usernameidmethodident = off" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# Preemptive banning - this means that if you have proxy auth enabled and a user accesses" >>dansguardian.conf
++echo "# a site banned by URL for example they will be denied straight away without a request" >>dansguardian.conf
++echo "# for their user and pass.  This has the effect of requiring the user to visit a clean" >>dansguardian.conf
++echo "# site first before it knows who they are and thus maybe an admin user." >>dansguardian.conf
++echo "# This is how DansGuardian has always worked but in some situations it is less than" >>dansguardian.conf
++echo "# ideal.  So you can optionally disable it.  Default is on." >>dansguardian.conf
++echo "# As a side effect disabling this makes AD image replacement work better as the mime" >>dansguardian.conf
++echo "# type is know." >>dansguardian.conf
++echo "preemptivebanning = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# Misc settings" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# if on it adds an X-Forwarded-For: <clientip> to the HTTP request" >>dansguardian.conf
++echo "# header.  This may help solve some problem sites that need to know the" >>dansguardian.conf
++echo "# source ip. on | off" >>dansguardian.conf
++echo "forwardedfor = off" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# if on it uses the X-Forwarded-For: <clientip> to determine the client" >>dansguardian.conf
++echo "# IP. This is for when you have squid between the clients and DansGuardian." >>dansguardian.conf
++echo "# Warning - headers are easily spoofed. on | off" >>dansguardian.conf
++echo "usexforwardedfor = off" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# if on it logs some debug info regarding fork()ing and accept()ing which" >>dansguardian.conf
++echo "# can usually be ignored.  These are logged by syslog.  It is safe to leave" >>dansguardian.conf
++echo "# it on or off" >>dansguardian.conf
++echo "logconnectionhandlingerrors = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Fork pool options" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# sets the maximum number of processes to sporn to handle the incomming" >>dansguardian.conf
++echo "# connections.  Max value usually 250 depending on OS." >>dansguardian.conf
++echo "# On large sites you might want to try 180." >>dansguardian.conf
++echo "maxchildren = 120" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# sets the minimum number of processes to sporn to handle the incomming connections." >>dansguardian.conf
++echo "# On large sites you might want to try 32." >>dansguardian.conf
++echo "minchildren = 8" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# sets the minimum number of processes to be kept ready to handle connections." >>dansguardian.conf
++echo "# On large sites you might want to try 8." >>dansguardian.conf
++echo "minsparechildren = 4" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# sets the minimum number of processes to sporn when it runs out" >>dansguardian.conf
++echo "# On large sites you might want to try 10." >>dansguardian.conf
++echo "preforkchildren = 6" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# sets the maximum number of processes to have doing nothing." >>dansguardian.conf
++echo "# When this many are spare it will cull some of them." >>dansguardian.conf
++echo "# On large sites you might want to try 64." >>dansguardian.conf
++echo "maxsparechildren = 32" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# sets the maximum age of a child process before it croaks it." >>dansguardian.conf
++echo "# This is the number of connections they handle before exiting." >>dansguardian.conf
++echo "# On large sites you might want to try 10000." >>dansguardian.conf
++echo "maxagechildren = 500" >>dansguardian.conf
++
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Process options" >>dansguardian.conf
++echo "# (Change these only if you really know what you are doing)." >>dansguardian.conf
++echo "# These options allow you to run multiple instances of DansGuardian on a single machine." >>dansguardian.conf
++echo "# Remember to edit the log file path above also if that is your intention." >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# IPC filename" >>dansguardian.conf
++echo "# " >>dansguardian.conf
++echo "# Defines IPC server directory and filename used to communicate with the log process." >>dansguardian.conf
++echo "ipcfilename = '/tmp/.dguardianipc'" >>dansguardian.conf
++
++echo "" >>dansguardian.conf
++
++echo "# URL list IPC filename" >>dansguardian.conf
++echo "# " >>dansguardian.conf
++echo "# Defines URL list IPC server directory and filename used to communicate with the URL" >>dansguardian.conf
++echo "# cache process." >>dansguardian.conf
++echo "urlipcfilename = '/tmp/.dguardianurlipc'" >>dansguardian.conf
++
++echo "" >>dansguardian.conf
++
++echo "# PID filename" >>dansguardian.conf
++echo "# " >>dansguardian.conf
++echo "# Defines process id directory and filename." >>dansguardian.conf
++echo "#pidfilename = '/var/run/dansguardian.pid'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Disable daemoning" >>dansguardian.conf
++echo "# If enabled the process will not fork into the background." >>dansguardian.conf
++echo "# It is not usually advantageous to do this." >>dansguardian.conf
++echo "# on|off ( defaults to off )" >>dansguardian.conf
++echo "nodaemon = off" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Disable logging process" >>dansguardian.conf
++echo "# on|off ( defaults to off )" >>dansguardian.conf
++echo "nologger = off" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Daemon runas user and group" >>dansguardian.conf
++echo "# This is the user that DansGuardian runs as.  Normally the user/group nobody." >>dansguardian.conf
++echo "# Uncomment to use.  Defaults to the user set at compile time." >>dansguardian.conf
++echo "# daemonuser = 'nobody'" >>dansguardian.conf
++echo "# daemongroup = 'nobody'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# Soft restart" >>dansguardian.conf
++echo "# When on this disables the forced killing off all processes in the process group." >>dansguardian.conf
++echo "# This is not to be confused with the -g run time option - they are not related." >>dansguardian.conf
++echo "# on|off ( defaults to off )" >>dansguardian.conf
++echo "softrestart = off" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# ANTIVIRUS SETTINGS" >>dansguardian.conf
++echo "# --------------------" >>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "# OPTION: virusscan" >>dansguardian.conf
++echo "# If on, we scan all downloaded content using embedded virus engine." >>dansguardian.conf
++echo "# Supported engines of this version are ClamAV, ClamDScan, KAV, KAV5, Trophie, Sophie." >>dansguardian.conf
++echo "# If off, we don't scan any downloaded content." >>dansguardian.conf
++echo "# See http://sourceforge.net/projects/dgav/ for more details." >>dansguardian.conf
++echo "virusscan = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: virusengine">>dansguardian.conf
++echo "# Set the embedded virus scan engine to be used (clamav, clamdscan, kav, aveserver, trophie, sophie).">>dansguardian.conf
++echo "virusengine = '$av_eng'">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: tricklelength" >>dansguardian.conf
++echo "# With tricklelength you can choose between three different trickle modes:">>dansguardian.conf
++echo "# a) If set to -1, the scanner will send 1 byte per delay period" >>dansguardian.conf
++echo "#    to the client to keep a download connection alive." >>dansguardian.conf
++echo "#    When the whole file is downloaded and scanned, the client will" >>dansguardian.conf
++echo "#    receive all remaining bytes, if the file was clean." >>dansguardian.conf
++echo "# b) If set to less than -1 (eg. -1024) the scanner will send,">>dansguardian.conf
++echo "#    after firsttrickledelay seconds, a proportional amount of data" >>dansguardian.conf
++echo "#    to the client (e.g 1024 bytes per downloaded megabyte); after">>dansguardian.conf
++echo "#    followingtrickledelay seconds again a proportional amount">>dansguardian.conf
++echo "#    of data is sent to the client and so on. When the whole file is">>dansguardian.conf
++echo "#    downloaded and scanned, the client will receive all remaining" >>dansguardian.conf
++echo "#    bytes, if the file was clean." >>dansguardian.conf
++echo "#    Recommended value: -1024 (1024 bytes per downloaded megabyte)" >>dansguardian.conf
++echo "# c) If set to a positive integer value it enables immediate delivery" >>dansguardian.conf
++echo "#    to the client. The value set means minimum number of bytes of the" >>dansguardian.conf
++echo "#    downloaded file that will be held and delivered after virus scan." >>dansguardian.conf
++echo "#    If clean, the remaining bytes will be sent to the client." >>dansguardian.conf
++echo "#    If infected, file downloaded will be incomplete and a warning message " >>dansguardian.conf
++echo "#    will be sent to the postmaster and possibly the user."  >>dansguardian.conf
++echo "#    Recommended minimum positive value: 32768 (32 kbytes)" >>dansguardian.conf
++echo "#">>dansguardian.conf
++echo "# NOTE:">>dansguardian.conf
++echo "#    only trickle modes a) and b) allow for limited mime-header">>dansguardian.conf
++echo "#    rewriting; eg. if a zip file (application/zip) is downloaded">>dansguardian.conf
++echo "#    and contains a virus it's mime-type is rewritten to text/html">>dansguardian.conf
++echo "#    which in turn forces the browser to display the warning page;" >>dansguardian.conf
++echo "#    be aware however, that this is only possible for downloads" >>dansguardian.conf
++echo "#    that finish within firsttrickledelay seconds!" >>dansguardian.conf
++echo "tricklelength = 32768" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: forkscanlength" >>dansguardian.conf
++echo "# Specifies maximum file size, in bytes, that is scanned w/o parallel trickling."  >>dansguardian.conf
++echo "# Files larger than 'forkscan_length' will be scanned in the background," >>dansguardian.conf
++echo "# while a foreground process trickles data to the client in order to keep" >>dansguardian.conf
++echo "# connection alive." >>dansguardian.conf
++echo "# This heavily depends on the available CPU speed. Slow CPUs need smaller values." >>dansguardian.conf
++echo "# The size is in Kibibytes - eg 2048 = 2Mb" >>dansguardian.conf
++echo "forkscanlength = 32768" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: firsttrickledelay" >>dansguardian.conf
++echo "# Delay in seconds to deliver the first byte to the client." >>dansguardian.conf
++echo "# This option only applies if tricklelength is set to -1." >>dansguardian.conf
++echo "firsttrickledelay = 10" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: follwingtrickledelay" >>dansguardian.conf
++echo "# Delay in seconds to deliver subsequent bytes to the client." >>dansguardian.conf
++echo "# This option only applies if tricklelength is set to -1." >>dansguardian.conf
++echo "followingtrickledelay = 10" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: maxcontentscansize" >>dansguardian.conf
++echo "# Set the maximum size of a content to be virus scanned." >>dansguardian.conf
++echo "# Content size above this value will not be scanned against viruses." >>dansguardian.conf
++echo "# The size is in Kibibytes - eg 2048 = 2Mb" >>dansguardian.conf
++echo "# To have no limit, use 0 (zero)." >>dansguardian.conf
++echo "maxcontentscansize = 41904304" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: virusscanexceptions" >>dansguardian.conf
++echo "# If off, antivirus scanner will ignore DG exception sites and urls." >>dansguardian.conf
++echo "virusscanexceptions = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: urlcachecleanonly" >>dansguardian.conf
++echo "# If off, url cache will contain entries of text only urls." >>dansguardian.conf
++echo "# Keeping it off, preserves original Dansguardian feature and" >>dansguardian.conf
++echo "# downloaded content will be always scanned by antivirus." >>dansguardian.conf
++echo "# When turned on, urlcache will be loaded only with content" >>dansguardian.conf
++echo "# found to be good and that is virus free." >>dansguardian.conf
++echo "# Thus, content of urls found in urlcache WILL NOT BE SCANNED AGAIN." >>dansguardian.conf
++echo "urlcachecleanonly = on" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: virusscannertimeout">>dansguardian.conf
++echo "# The maximum length of time the commercial virus scanner is allowed to run">>dansguardian.conf
++echo "# for 1 batch of messages (in seconds).">>dansguardian.conf
++echo "virusscannertimeout = 60">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: notify">>dansguardian.conf
++echo "# Sets who receives email notification when a virus is found.">>dansguardian.conf
++echo "# Users must be authenticated to be able to receive messages.">>dansguardian.conf
++echo "# Email address for users will be formed by the authentication name received by DG">>dansguardian.conf
++echo "# plus @emaildomain (see option below)">>dansguardian.conf
++echo "# 0 = disabled">>dansguardian.conf
++echo "# 1 = user only">>dansguardian.conf
++echo "# 2 = postmaster only">>dansguardian.conf
++echo "# 3 = postmaster and users (default)">>dansguardian.conf
++echo "notify = 0">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: emaildomain">>dansguardian.conf
++echo "# Set email domain to use when notifying users of an infected file.">>dansguardian.conf
++echo "# This is just the domain name part, after the @">>dansguardian.conf
++echo "emaildomain = 'your.domain.com'">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: postmaster">>dansguardian.conf
++echo "# Set email address of who to notify about any infections found.">>dansguardian.conf
++echo "# Should put your full domain name here too.">>dansguardian.conf
++echo "postmaster = 'postmaster@your.domain.com'">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: emailserver">>dansguardian.conf
++echo "# Set the address and port of the Mail Server to send notifications through.">>dansguardian.conf
++echo "#" >>dansguardian.conf
++echo "emailserver = '127.0.0.1:25'">>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: downloaddir">>dansguardian.conf
++echo "# Set where the files are downloaded to before they are scanned." >>dansguardian.conf
++echo "# Since version 6.4.2 it is strongly recommended to define a directory path" >>dansguardian.conf
++echo "# TO BE USED ONLY BY DGAV." >>dansguardian.conf
++echo "# YOU WILL LOOSE FILES inside this directory path if it is used for any other purpose." >>dansguardian.conf
++echo "downloaddir = '/tmp/dgvirus'" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# CLAMAV SETTINGS">>dansguardian.conf
++echo "# --------------------" >>dansguardian.conf
++echo "# OPTION: clmaxfiles">>dansguardian.conf
++echo "# Set maximum number of files inside a compressed file">>dansguardian.conf
++echo "# default: 1500 files">>dansguardian.conf
++echo "clmaxfiles = 1500">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: clmaxreclevel">>dansguardian.conf
++echo "# Set maximum recursion level to perform scan on a compressed file">>dansguardian.conf
++echo "# that is inside a compressed file">>dansguardian.conf
++echo "# default: 3 levels">>dansguardian.conf
++echo "clmaxreclevel = 3">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: clmaxfilesize">>dansguardian.conf
++echo "# Set maximum file size of a file inside a compressed file">>dansguardian.conf
++echo "# default: 10485760 = 10 Mbytes">>dansguardian.conf
++echo "clmaxfilesize = 10485760">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: clblockencryptedarchives">>dansguardian.conf
++echo "# Treat encrypted compressed file as virus infected content.">>dansguardian.conf
++echo "# default: off">>dansguardian.conf
++echo "clblockencryptedarchives = off">>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: cldetectbroken">>dansguardian.conf
++echo "# Activate improved detection of broken executable files.">>dansguardian.conf
++echo "# default: off">>dansguardian.conf
++echo "cldetectbroken = off">>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# CLAMDSCAN SETTINGS">>dansguardian.conf
++echo "# --------------------" >>dansguardian.conf
++echo "# OPTION: clamdsocket">>dansguardian.conf
++echo "# Set the name of a local clamd socket (file)">>dansguardian.conf
++echo "# or the hostname:port of a remote clamd server">>dansguardian.conf
++echo "# default: '/tmp/clamd'">>dansguardian.conf
++echo "clamdsocket = '/tmp/clamd'">>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# KASPERSKY 5 SETTINGS">>dansguardian.conf
++echo "# --------------------" >>dansguardian.conf
++echo "# OPTION: avesocket">>dansguardian.conf
++echo "# Set name of the local socket file">>dansguardian.conf
++echo "# default: '/var/run/aveserver'">>dansguardian.conf
++echo "avesocket = '/var/run/aveserver'">>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# TROPHIE SETTINGS">>dansguardian.conf
++echo "# --------------------" >>dansguardian.conf
++echo "# OPTION: trophiesocket">>dansguardian.conf
++echo "# Set name of the local socket file">>dansguardian.conf
++echo "# default: '/var/run/trophie'">>dansguardian.conf
++echo "trophiesocket = '/var/run/trophie'">>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# SOPHIE SETTINGS">>dansguardian.conf
++echo "# --------------------" >>dansguardian.conf
++echo "# OPTION: sophiesocket">>dansguardian.conf
++echo "# Set name of the local socket file">>dansguardian.conf
++echo "# default: '/var/run/sophie'">>dansguardian.conf
++echo "sophiesocket = '/var/run/sophie'">>dansguardian.conf
++echo "" >>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# ICAP SETTINGS (experimental)">>dansguardian.conf
++echo "# ----------------------------" >>dansguardian.conf
++echo "# OPTION: icapsocket">>dansguardian.conf
++echo "# Set hostname:port of the icap server">>dansguardian.conf
++echo "# default: 'localhost:1344'">>dansguardian.conf
++echo "icapsocket = 'localhost:1344'">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: icapservice">>dansguardian.conf
++echo "# Set the icap service to be used">>dansguardian.conf
++echo "# default: 'icap://localhost/avscan'">>dansguardian.conf
++echo "icapservice = 'icap://localhost/avscan'">>dansguardian.conf
++echo "" >>dansguardian.conf
++
++
++echo "Generating platform specific dansguardianf1.conf..."
++if [ -f dansguardianf1.conf ]; then
++	rm -f dansguardianf1.conf
++fi
++
++echo "# DansGuardian filter group config file for version 2.8.0" >dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++
++echo "# Content filtering files location" >>dansguardianf1.conf
++$extendedecho "bannedphraselist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "bannedphraselist'" >>dansguardianf1.conf
++
++$extendedecho "weightedphraselist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "weightedphraselist'" >>dansguardianf1.conf
++
++$extendedecho "exceptionphraselist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "exceptionphraselist'" >>dansguardianf1.conf
++
++$extendedecho "bannedsitelist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "bannedsitelist'" >>dansguardianf1.conf
++
++$extendedecho "greysitelist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "greysitelist'" >>dansguardianf1.conf
++
++$extendedecho "exceptionsitelist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "exceptionsitelist'" >>dansguardianf1.conf
++
++$extendedecho "bannedurllist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "bannedurllist'" >>dansguardianf1.conf
++
++$extendedecho "greyurllist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "greyurllist'" >>dansguardianf1.conf
++
++$extendedecho "exceptionurllist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "exceptionurllist'" >>dansguardianf1.conf
++
++$extendedecho "bannedregexpurllist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "bannedregexpurllist'" >>dansguardianf1.conf
++
++$extendedecho "bannedextensionlist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "bannedextensionlist'" >>dansguardianf1.conf
++
++$extendedecho "bannedmimetypelist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "bannedmimetypelist'" >>dansguardianf1.conf
++
++$extendedecho "picsfile = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "pics'" >>dansguardianf1.conf
++
++$extendedecho "contentregexplist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "contentregexplist'" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "# Naughtyness limit" >>dansguardianf1.conf
++echo "# This the limit over which the page will be blocked.  Each weighted phrase is given" >>dansguardianf1.conf
++echo "# a value either positive or negative and the values added up.  Phrases to do with" >>dansguardianf1.conf
++echo "# good subjects will have negative values, and bad subjects will have positive" >>dansguardianf1.conf
++echo "# values.  See the weightedphraselist file for examples." >>dansguardianf1.conf
++echo "# As a guide:" >>dansguardianf1.conf
++echo "# 50 is for young children,  100 for old children,  160 for young adults." >>dansguardianf1.conf
++echo "naughtynesslimit = 50" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "# Temporary Denied Page Bypass" >>dansguardianf1.conf
++echo "# It provides a link on the denied page to bypass the ban for a few minutes.  To be" >>dansguardianf1.conf
++echo "# secure it uses a random hashed secret generated at daemon startup.  You define the" >>dansguardianf1.conf
++echo "# number of seconds the bypass will function for before the deny will appear again." >>dansguardianf1.conf
++echo "# To allow the link on the denied page to appear you will need to edit the template.html" >>dansguardianf1.conf
++echo "# or dansguardian.pl file for your language." >>dansguardianf1.conf
++echo "# 300 = enable for 5 minutes" >>dansguardianf1.conf
++echo "# 0 = disable ( defaults to 0 )" >>dansguardianf1.conf
++echo "# -1 = enable but you require a separate program to generate a valid link" >>dansguardianf1.conf
++echo "bypass = 0" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "# Temporary Denied Page Bypass Secret Key" >>dansguardianf1.conf
++echo "# Rather than generating a random key you can specify one.  It must be more than 8 chars." >>dansguardianf1.conf
++echo "# '' = generate a random one (recommended and default)" >>dansguardianf1.conf
++echo "# 'Mary had a little lamb.' = an example" >>dansguardianf1.conf
++echo "# '76b42abc1cd0fdcaf6e943dcbc93b826' = an example" >>dansguardianf1.conf
++echo "bypasskey = ''" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++
++# Included by Aecio F. Neto (afn@harvest.com.br) - Harvest Consultoria (http://www.harvest.com.br)
++echo "# ANTIVIRUS SETTINGS for this group" >>dansguardianf1.conf
++echo "# --------------------" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++echo "# OPTION: virusscan" >>dansguardianf1.conf
++echo "# If on, content will be scanned using virus engine setup in dansguardian.conf." >>dansguardianf1.conf
++echo "# More options are available in dansguardian.conf." >>dansguardianf1.conf
++echo "virusscan = on" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++
++echo "# OPTION: exceptionvirusextensionlist" >>dansguardianf1.conf
++echo "# The following file allow you to define file extensions" >>dansguardianf1.conf
++echo "# that should not be virus scanned." >>dansguardianf1.conf
++$extendedecho "exceptionvirusextensionlist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "exceptionvirusextensionlist'" >>dansguardianf1.conf
++echo "" >>dansguardian.conf
++
++echo "# OPTION: exceptionvirusmimetypelist" >>dansguardianf1.conf
++echo "# The following file allow you to define mime types" >>dansguardianf1.conf
++echo "# that should not be virus scanned." >>dansguardianf1.conf
++$extendedecho "exceptionvirusmimetypelist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "exceptionvirusmimetypelist'" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++
++echo "# OPTION: exceptionvirussitelist" >>dansguardianf1.conf
++echo "# File location of definition of sites not be virus scanned." >>dansguardianf1.conf
++$extendedecho "exceptionvirussitelist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "exceptionvirussitelist'" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++
++echo "# OPTION: exceptionvirusurllist" >>dansguardianf1.conf
++echo "# File location of definition of URLs not be virus scanned." >>dansguardianf1.conf
++$extendedecho "exceptionvirusurllist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "exceptionvirusurllist'" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++
++echo "# OPTION: dlmgrextensionlist" >>dansguardianf1.conf
++echo "# File location of file extensions to be handled by embedded download manager." >>dansguardianf1.conf
++$extendedecho "dlmgrextensionlist = '$prefixdir$sysconfdir\c" >>dansguardianf1.conf
++echo "dlmgrextensionlist'" >>dansguardianf1.conf
++echo "" >>dansguardianf1.conf
++
++
++echo "Generating platform specific weightedphraselist..."
++if [ -f weightedphraselist ]; then
++	rm -f weightedphraselist
++fi
++cat weightedphraselist.in > weightedphraselist
++echo "" >>weightedphraselist
++echo "" >>weightedphraselist
++echo "#Good Phrases (to allow medical, education, news and other good sites)" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/goodphrases/weighted_general>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/goodphrases/weighted_news>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/goodphrases/weighted_general_danish>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/goodphrases/weighted_general_portuguese>" >>weightedphraselist
++
++echo "" >>weightedphraselist
++echo "#Pornography" >>weightedphraselist
++
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/pornography/weighted>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/pornography/weighted_danish>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/pornography/weighted_dutch>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/pornography/weighted_french>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/pornography/weighted_german>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/pornography/weighted_italian>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/pornography/weighted_portuguese>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/pornography/weighted_spanish> #ALPHA#" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/nudism/weighted>" >>weightedphraselist
++
++echo "" >>weightedphraselist
++echo "#Bad Words - swearing and profanities" >>weightedphraselist
++
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/badwords/weighted_dutch>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/badwords/weighted_french>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/badwords/weighted_german>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/badwords/weighted_portuguese>" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/badwords/weighted_spanish> #ALPHA#" >>weightedphraselist
++
++echo "" >>weightedphraselist
++echo "#Drugs" >>weightedphraselist
++
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/drugadvocacy/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/illegaldrugs/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/illegaldrugs/weighted_portuguese>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/legaldrugs/weighted>" >>weightedphraselist
++
++echo "" >>weightedphraselist
++echo "#Violence and intolerance" >>weightedphraselist
++
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/intolerance/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/intolerance/weighted_portuguese>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/gore/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/gore/weighted_portuguese>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/violence/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/violence/weighted_portuguese>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/weapons/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/weapons/weighted_portuguese>" >>weightedphraselist
++
++echo "" >>weightedphraselist
++echo "#Chat" >>weightedphraselist
++
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/chat/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/chat/weighted_italian>" >>weightedphraselist
++
++echo "" >>weightedphraselist
++echo "#Webmail" >>weightedphraselist
++
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/webmail/weighted> #ALPHA#" >>weightedphraselist
++echo "#Note that if you enable the webmail weighted list you should also disable " >>weightedphraselist
++echo "#the "exception_email" list in the exceptionphraselist file." >>weightedphraselist
++
++
++
++echo "" >>weightedphraselist
++echo "#Productivity" >>weightedphraselist
++
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/games/weighted> #ALPHA#" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/gambling/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/gambling/weighted_portuguese>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/news/weighted> #ALPHA#" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/personals/weighted>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/personals/weighted_portuguese>" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/sport/weighted> #ALPHA#" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/warezhacking/weighted>" >>weightedphraselist
++
++echo "" >>weightedphraselist
++echo "#System Management and Security" >>weightedphraselist
++
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/malware/weighted> #ALPHA#" >>weightedphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/peer2peer/weighted> #BETA#" >>weightedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>weightedphraselist
++echo "phraselists/proxies/weighted>" >>weightedphraselist
++
++
++
++echo "Generating platform specific bannedphraselist..."
++if [ -f bannedphraselist ]; then
++	rm -f bannedphraselist
++fi
++cat bannedphraselist.in > bannedphraselist
++echo "" >>bannedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>bannedphraselist
++echo "phraselists/pornography/banned>" >>bannedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>bannedphraselist
++echo "phraselists/illegaldrugs/banned>" >>bannedphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>bannedphraselist
++echo "phraselists/gambling/banned>" >>bannedphraselist
++
++
++echo "Generating platform specific exceptionphraselist..."
++if [ -f exceptionphraselist ]; then
++	rm -f exceptionphraselist
++fi
++cat exceptionphraselist.in > exceptionphraselist
++echo "" >>exceptionphraselist
++$extendedecho ".Include<$prefixdir$sysconfdir\c" >>exceptionphraselist
++echo "phraselists/goodphrases/exception>" >>exceptionphraselist
++$extendedecho "#.Include<$prefixdir$sysconfdir\c" >>exceptionphraselist
++echo "phraselists/goodphrases/exception_email>" >>exceptionphraselist
++
++
++echo "Generating platform specific logrotation..."
++if [ -f logrotation ]; then
++	rm -f logrotation
++fi
++echo "#!/bin/sh" >logrotation
++echo "# DansGuardian logrotation script for version 2.8.0" >>logrotation
++echo "" >>logrotation
++echo "LOG_DIR=$prefixdir$logdir" >>logrotation
++echo "NUM_LOGS=4" >>logrotation
++echo "LOG=\$LOG_DIR/access.log" >>logrotation
++echo "" >>logrotation
++
++case `uname -s` in
++        SunOS*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian stop > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	OpenBSD*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian.sh stop > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	FreeBSD*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian.sh stop > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	NetBSD*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian.sh stop > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	Darwin*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian.sh stop > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	Linux*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++                echo "dansguardian stop > /dev/null" >>logrotation
++                echo "" >>logrotation
++	;;
++       HP-UX*)
++               $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++               echo "dansguardian stop > /dev/null" >>logrotation
++               echo "" >>logrotation
++	;;
++esac
++
++echo "# Keep a maximum of \$NUM_LOGS logs around." >>logrotation
++
++echo "if [ -f \$LOG.\$NUM_LOGS ]; then rm -f \$LOG.\$NUM_LOGS; fi" >>logrotation
++
++echo "n=\$(( \$NUM_LOGS - 1 ))" >>logrotation
++echo "while [ \$n -gt 0 ]; do" >>logrotation
++echo "  if [ -f \$LOG.\$n ]; then" >>logrotation
++echo "    mv \$LOG.\$n \$LOG.\$(( \$n + 1 ))" >>logrotation
++echo "  fi" >>logrotation
++echo "  n=\$(( \$n - 1 ))" >>logrotation
++echo "done" >>logrotation
++
++echo "if [ -f \$LOG ]; then" >>logrotation
++echo "  mv \$LOG \$LOG.1" >>logrotation
++echo "fi" >>logrotation
++echo "" >>logrotation
++echo "sleep 5" >>logrotation
++echo "" >>logrotation
++
++case `uname -s` in
++	SunOS*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian start > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	OpenBSD*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian.sh start > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	FreeBSD*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian.sh start > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	NetBSD*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian.sh start > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	Darwin*)
++	        $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++	        echo "dansguardian.sh start > /dev/null" >>logrotation
++	        echo "" >>logrotation
++	;;
++	Linux*)
++	      $extendedecho "$prefixdir$sysvdir\c" >>logrotation
++              echo "dansguardian start > /dev/null" >>logrotation
++              echo "" >>logrotation
++	;;
++esac
++
++chmod u+x logrotation
++
++echo "Generating platform specific logrotate.d script..."
++if [ -f logrotate.dansguardian ]; then
++	rm -f logrotate.dansguardian
++fi
++
++$extendedecho "$prefixdir$logdir\c" >>logrotate.dansguardian
++echo "access.log {" >>logrotate.dansguardian
++echo "  rotate 4" >>logrotate.dansguardian
++echo "  weekly" >>logrotate.dansguardian
++echo "  sharedscripts" >>logrotate.dansguardian
++echo "  prerotate" >>logrotate.dansguardian
++case `uname -s` in
++        SunOS*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian stop > /dev/null" >>logrotate.dansguardian
++	;;
++	OpenBSD*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian.sh stop > /dev/null" >>logrotate.dansguardian
++	;;
++	FreeBSD*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian.sh stop > /dev/null" >>logrotate.dansguardian
++	;;
++	NetBSD*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian.sh stop > /dev/null" >>logrotate.dansguardian
++	;;
++	Darwin*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian.sh stop > /dev/null" >>logrotate.dansguardian
++	;;
++	Linux*)
++              echo "    killall dansguardian > /dev/null" >>logrotate.dansguardian
++              echo "    sleep 5" >>logrotate.dansguardian
++	;;
++esac
++echo "  endscript" >>logrotate.dansguardian
++
++echo "" >>logrotate.dansguardian
++
++echo "  postrotate" >>logrotate.dansguardian
++case `uname -s` in
++        SunOS*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian start > /dev/null" >>logrotate.dansguardian
++	;;
++	OpenBSD*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian.sh start > /dev/null" >>logrotate.dansguardian
++	;;
++	FreeBSD*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian.sh start > /dev/null" >>logrotate.dansguardian
++	;;
++	NetBSD*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian.sh start > /dev/null" >>logrotate.dansguardian
++	;;
++	Darwin*)
++	        $extendedecho "    $prefixdir$sysvdir\c" >>logrotate.dansguardian
++	        echo "dansguardian.sh start > /dev/null" >>logrotate.dansguardian
++	;;
++	Linux*)
++	      $extendedecho "    $prefixdir$bindir\c" >>logrotate.dansguardian
++              echo "dansguardian > /dev/null" >>logrotate.dansguardian
++	;;
++esac
++echo "  endscript" >>logrotate.dansguardian
++echo "}" >>logrotate.dansguardian
++
++# END DansGuardian
++
++trap 'rm -fr conftest* confdefs* core core.* *.core $ac_clean_files; exit 1' 1 2 15
++
++test "x$prefix" = xNONE && prefix=$ac_default_prefix
++# Let make expand exec_prefix.
++test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
++
++# Any assignment to VPATH causes Sun make to only execute
++# the first set of double-colon rules, so remove it if not needed.
++# If there is a colon in the path, we need to keep it.
++if test "x$srcdir" = x.; then
++  ac_vpsub='/^[ 	]*VPATH[ 	]*=[^:]*$/d'
++fi
++
++trap 'rm -f $CONFIG_STATUS conftest*; exit 1' 1 2 15
++
++DEFS=-DHAVE_CONFIG_H
++
++# Without the "./", some shells look in PATH for config.status.
++: ${CONFIG_STATUS=./config.status}
++
++echo creating $CONFIG_STATUS
++
++ac_given_srcdir=$srcdir
++ac_given_INSTALL="$INSTALL"
++
++trap 'rm -fr `echo "\
++ Makefile | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
++
++# Protect against being on the right side of a sed subst in config.status.
++sed 's/%@/@@/; s/@%/@@/; s/%g\$/@g/; /@g\$/s/[\\\\&%]/\\\\&/g;
++ s/@@/%@/; s/@@/@%/; s/@g\$/%g/' > conftest.subs <<\\CEOF
++$ac_vpsub
++$extrasub
++s%@SHELL@%$SHELL%g
++s%@CFLAGS@%$CFLAGS%g
++s%@CPPFLAGS@%$CPPFLAGS%g
++s%@CXXFLAGS@%$CXXFLAGS%g
++s%@FFLAGS@%$FFLAGS%g
++s%@DEFS@%$DEFS%g
++s%@LDFLAGS@%$LDFLAGS%g
++s%@LIBS@%$LIBS%g
++s%@bindir@%$bindir%g
++s%@sysconfdir@%$sysconfdir%g
++s%@prefixdir@%$prefixdir%g
++s%@sysvdir@%$sysvdir%g
++s%@runas_usr@%$runas_usr%g
++s%@runas_grp@%$runas_grp%g
++s%@cgidir@%$cgidir%g
++s%@mandir@%$mandir%g
++s%@logdir@%$logdir%g
++s%@piddir@%$piddir%g
++s%@PACKAGE@%$PACKAGE%g
++s%@VERSION@%$VERSION%g
++s%@CC@%$CC%g
++s%@SET_MAKE@%$SET_MAKE%g
++s%@RM@%$RM%g
++s%@CP@%$CP%g
++s%@MV@%$MV%g
++s%@SED@%$SED%g
++s%@AR@%$AR%g
++s%@YACC@%$YACC%g
++s%@INSTALL_PROGRAM@%$INSTALL_PROGRAM%g
++s%@INSTALL_SCRIPT@%$INSTALL_SCRIPT%g
++s%@INSTALL_DATA@%$INSTALL_DATA%g
++s%@LEX@%$LEX%g
++s%@LEXLIB@%$LEXLIB%g
++s%@RANLIB@%$RANLIB%g
++s%@PICFLAGS@%$PICFLAGS%g
++s%@CPP@%$CPP%g
++s%@SELECT_SRC@%$SELECT_SRC%g
++s%@SSL_DEFINE@%$SSL_DEFINE%g
++s%@SSL_LIBS@%$SSL_LIBS%g
++s%@INCDEP@%$INCDEP%g
++s%@SUBDIR_MESSAGES@%$SUBDIR_MESSAGES%g
++s%@MSGFMT@%$MSGFMT%g
++
++CEOF
++EOF
++
++cat >> $CONFIG_STATUS <<\EOF
++
++# Split the substitutions into bite-sized pieces for seds with
++# small command number limits, like on Digital OSF/1 and HP-UX.
++ac_max_sed_cmds=90 # Maximum number of lines to put in a sed script.
++ac_file=1 # Number of current file.
++ac_beg=1 # First line for current file.
++ac_end=$ac_max_sed_cmds # Line after last line for current file.
++ac_more_lines=:
++ac_sed_cmds=""
++while $ac_more_lines; do
++  if test $ac_beg -gt 1; then
++    sed "1,${ac_beg}d; ${ac_end}q" conftest.subs > conftest.s$ac_file
++  else
++    sed "${ac_end}q" conftest.subs > conftest.s$ac_file
++  fi
++  if test ! -s conftest.s$ac_file; then
++    ac_more_lines=false
++    rm -f conftest.s$ac_file
++  else
++    if test -z "$ac_sed_cmds"; then
++      ac_sed_cmds="sed -f conftest.s$ac_file"
++    else
++      ac_sed_cmds="$ac_sed_cmds | sed -f conftest.s$ac_file"
++    fi
++    ac_file=`expr $ac_file + 1`
++    ac_beg=$ac_end
++    ac_end=`expr $ac_end + $ac_max_sed_cmds`
++  fi
++done
++if test -z "$ac_sed_cmds"; then
++  ac_sed_cmds=cat
++fi
++EOF
++
++cat >> $CONFIG_STATUS <<EOF
++
++CONFIG_FILES=\${CONFIG_FILES-"\
++ Makefile                    \
++"}
++EOF
++cat >> $CONFIG_STATUS <<\EOF
++for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
++  # Support "outfile[:infile[:infile...]]", defaulting infile="outfile.in".
++  case "$ac_file" in
++  *:*) ac_file_in=`echo "$ac_file"|sed 's%[^:]*:%%'`
++       ac_file=`echo "$ac_file"|sed 's%:.*%%'` ;;
++  *) ac_file_in="${ac_file}.in" ;;
++  esac
++
++  # Adjust a relative srcdir, top_srcdir, and INSTALL for subdirectories.
++
++  # Remove last slash and all that follows it.  Not all systems have dirname.
++  ac_dir=`echo $ac_file|sed 's%/[^/][^/]*$%%'`
++  if test "$ac_dir" != "$ac_file" && test "$ac_dir" != .; then
++    # The file is in a subdirectory.
++    test ! -d "$ac_dir" && mkdir "$ac_dir"
++    ac_dir_suffix="/`echo $ac_dir|sed 's%^\./%%'`"
++    # A "../" for each directory in $ac_dir_suffix.
++    ac_dots=`echo $ac_dir_suffix|sed 's%/[^/]*%../%g'`
++  else
++    ac_dir_suffix= ac_dots=
++  fi
++
++  case "$ac_given_srcdir" in
++  .)  srcdir=.
++      if test -z "$ac_dots"; then top_srcdir=.
++      else top_srcdir=`echo $ac_dots|sed 's%/$%%'`; fi ;;
++  /*) srcdir="$ac_given_srcdir$ac_dir_suffix"; top_srcdir="$ac_given_srcdir" ;;
++  *) # Relative path.
++    srcdir="$ac_dots$ac_given_srcdir$ac_dir_suffix"
++    top_srcdir="$ac_dots$ac_given_srcdir" ;;
++  esac
++
++  case "$ac_given_INSTALL" in
++  [/$]*) INSTALL="$ac_given_INSTALL" ;;
++  *) INSTALL="$ac_dots$ac_given_INSTALL" ;;
++  esac
++
++  echo creating "$ac_file"
++  rm -f "$ac_file"
++  configure_input="Generated automatically from `echo $ac_file_in|sed 's%.*/%%'` by configure."
++  case "$ac_file" in
++  *Makefile*) ac_comsub="1i\\
++# $configure_input" ;;
++  *) ac_comsub= ;;
++  esac
++
++  ac_file_inputs=`echo $ac_file_in|sed -e "s%^%$ac_given_srcdir/%" -e "s%:% $ac_given_srcdir/%g"`
++  sed -e "$ac_comsub
++s%@configure_input@%$configure_input%g
++s%@srcdir@%$srcdir%g
++s%@top_srcdir@%$top_srcdir%g
++s%@INSTALL@%$INSTALL%g
++" $ac_file_inputs | (eval "$ac_sed_cmds") > $ac_file
++fi; done
++rm -f conftest.s*
++
++
++# These sed commands are passed to sed as "A NAME B NAME C VALUE D", where
++# NAME is the cpp macro being defined and VALUE is the value it is being given.
++#
++# ac_d sets the value in "#define NAME VALUE" lines.
++ac_dA='s%^\([ 	]*\)#\([ 	]*define[ 	][ 	]*\)'
++ac_dB='\([ 	][ 	]*\)[^ 	]*%\1#\2'
++ac_dC='\3'
++ac_dD='%g'
++# ac_u turns "#undef NAME" with trailing blanks into "#define NAME VALUE".
++ac_uA='s%^\([ 	]*\)#\([ 	]*\)undef\([ 	][ 	]*\)'
++ac_uB='\([ 	]\)%\1#\2define\3'
++ac_uC=' '
++ac_uD='\4%g'
++# ac_e turns "#undef NAME" without trailing blanks into "#define NAME VALUE".
++ac_eA='s%^\([ 	]*\)#\([ 	]*\)undef\([ 	][ 	]*\)'
++ac_eB='$%\1#\2define\3'
++ac_eC=' '
++ac_eD='%g'
++
++if test "${CONFIG_HEADERS+set}" != set; then
++EOF
++cat >> $CONFIG_STATUS <<EOF
++  CONFIG_HEADERS="include/setup.h"
++EOF
++cat >> $CONFIG_STATUS <<\EOF
++fi
++for ac_file in .. $CONFIG_HEADERS; do if test "x$ac_file" != x..; then
++  # Support "outfile[:infile[:infile...]]", defaulting infile="outfile.in".
++  case "$ac_file" in
++  *:*) ac_file_in=`echo "$ac_file"|sed 's%[^:]*:%%'`
++       ac_file=`echo "$ac_file"|sed 's%:.*%%'` ;;
++  *) ac_file_in="${ac_file}.in" ;;
++  esac
++
++  echo creating $ac_file
++
++  rm -f conftest.frag conftest.in conftest.out
++  ac_file_inputs=`echo $ac_file_in|sed -e "s%^%$ac_given_srcdir/%" -e "s%:% $ac_given_srcdir/%g"`
++  cat $ac_file_inputs > conftest.in
++
++EOF
++
++# Transform confdefs.h into a sed script conftest.vals that substitutes
++# the proper values into config.h.in to produce config.h.  And first:
++# Protect against being on the right side of a sed subst in config.status.
++# Protect against being in an unquoted here document in config.status.
++rm -f conftest.vals
++cat > conftest.hdr <<\EOF
++s/[\\&%]/\\&/g
++s%[\\$`]%\\&%g
++s%#define \([A-Za-z_][A-Za-z0-9_]*\) *\(.*\)%${ac_dA}\1${ac_dB}\1${ac_dC}\2${ac_dD}%gp
++s%ac_d%ac_u%gp
++s%ac_u%ac_e%gp
++EOF
++sed -n -f conftest.hdr confdefs.h > conftest.vals
++rm -f conftest.hdr
++
++# This sed command replaces #undef with comments.  This is necessary, for
++# example, in the case of _POSIX_SOURCE, which is predefined and required
++# on some systems where configure will not decide to define it.
++cat >> conftest.vals <<\EOF
++s%^[ 	]*#[ 	]*undef[ 	][ 	]*[a-zA-Z_][a-zA-Z_0-9]*%/* & */%
++EOF
++
++# Break up conftest.vals because some shells have a limit on
++# the size of here documents, and old seds have small limits too.
++
++rm -f conftest.tail
++while :
++do
++  ac_lines=`grep -c . conftest.vals`
++  # grep -c gives empty output for an empty file on some AIX systems.
++  if test -z "$ac_lines" || test "$ac_lines" -eq 0; then break; fi
++  # Write a limited-size here document to conftest.frag.
++  echo '  cat > conftest.frag <<CEOF' >> $CONFIG_STATUS
++  sed ${ac_max_here_lines}q conftest.vals >> $CONFIG_STATUS
++  echo 'CEOF
++  sed -f conftest.frag conftest.in > conftest.out
++  rm -f conftest.in
++  mv conftest.out conftest.in
++' >> $CONFIG_STATUS
++  sed 1,${ac_max_here_lines}d conftest.vals > conftest.tail
++  rm -f conftest.vals
++  mv conftest.tail conftest.vals
++done
++rm -f conftest.vals
++
++cat >> $CONFIG_STATUS <<\EOF
++  rm -f conftest.frag conftest.h
++  echo "/* $ac_file.  Generated automatically by configure.  */" > conftest.h
++  cat conftest.in >> conftest.h
++  rm -f conftest.in
++  if cmp -s $ac_file conftest.h 2>/dev/null; then
++    echo "$ac_file is unchanged"
++    rm -f conftest.h
++  else
++    # Remove last slash and all that follows it.  Not all systems have dirname.
++      ac_dir=`echo $ac_file|sed 's%/[^/][^/]*$%%'`
++      if test "$ac_dir" != "$ac_file" && test "$ac_dir" != .; then
++      # The file is in a subdirectory.
++      test ! -d "$ac_dir" && mkdir "$ac_dir"
++    fi
++    rm -f $ac_file
++    mv conftest.h $ac_file
++  fi
++fi; done
++
++EOF
++cat >> $CONFIG_STATUS <<EOF
++
++EOF
++cat >> $CONFIG_STATUS <<\EOF
++
++exit 0
++EOF
++chmod +x $CONFIG_STATUS
++rm -fr confdefs* $ac_clean_files
++test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
++\CEOF
++

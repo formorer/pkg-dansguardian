@@ -1,0 +1,35 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 04_clamav-0.90-API by Stephen Gran <sgran@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+--- dansguardian-2.8.0.6-antivirus-6.4.4.1.orig/ClamAV.cpp
++++ dansguardian-2.8.0.6-antivirus-6.4.4.1/ClamAV.cpp
+@@ -54,9 +54,10 @@
+ #endif
+       root = NULL;
+     }
+-  if ((ret = cl_loaddbdir (dbdir, &root, &no)))
++
++  if ((ret = cl_load (dbdir, &root, &no, CL_DB_STDOPT)))
+     {
+-      syslog (LOG_ERR, "Error loading ClamAV DB: %s", cl_perror (ret));
++      syslog (LOG_ERR, "Error loading ClamAV DB: %s", cl_strerror (ret));
+       return ret;
+     }
+   else
+only in patch2:
+unchanged:
+--- dansguardian-2.8.0.6-antivirus-6.4.4.1.orig/ClamAV.hpp
++++ dansguardian-2.8.0.6-antivirus-6.4.4.1/ClamAV.hpp
+@@ -39,7 +39,7 @@
+ private:
+   const char *virname;
+   const char *err_str;
+-  struct cl_node *root;
++  struct cl_engine *root;
+   struct cl_limits limits;
+   struct cl_stat dbstat;
+ 

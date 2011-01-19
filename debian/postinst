@@ -1,0 +1,130 @@
+#! /bin/sh -e
+
+if ! id -u dansguardian > /dev/null 2>&1 ; then
+    adduser --system --group \
+	--disabled-login \
+	--gecos "DansGuardian User" \
+	--home /var/log/dansguardian \
+	--shell /bin/sh \
+	dansguardian
+fi
+
+dguser=`grep daemonuser /etc/dansguardian/dansguardian.conf|grep -v '^\ *#' \
+	|awk -F = '{print $2}'|tr -d \ \'`
+
+dggroup=`grep daemongroup /etc/dansguardian/dansguardian.conf|grep -v '^\ *#' \
+	|awk -F = '{print $2}'|tr -d \ \'`
+
+logdir=`grep loglocation /etc/dansguardian/dansguardian.conf|grep -v '^\ *#' \
+	|awk -F = '{print $2}'|tr -d \ \'|xargs -r dirname 2>/dev/null`
+
+echo "$logdir" 
+test -z "$dguser" && dguser=dansguardian
+test -z "$dggroup" && dggroup=dansguardian
+test -z "$logdir" && logdir=/var/log/dansguardian
+
+chown -R $dguser:$dggroup $logdir
+chmod -R u+wr $logdir
+chmod u+wrx $logdir
+
+# Move a conffile without triggering a dpkg question
+mv_conffile() {
+    OLDCONFFILE="$1"
+    NEWCONFFILE="$2"
+    if [ -e "$OLDCONFFILE" ]; then
+        echo "Preserving user changes to $NEWCONFFILE ..."
+        mv -f "$NEWCONFFILE" "$NEWCONFFILE".dpkg-new
+        mv -f "$OLDCONFFILE" "$NEWCONFFILE"
+    fi
+}
+
+case "$1" in
+configure)
+    if dpkg --compare-versions "$2" le "dansguardian_2.8.0.6-antivirus-6.4.4.1-4"; then
+
+	mv_conffile dansguardian "/etc/dansguardian/bannedextensionlist" "/etc/dansguardian/lists/bannedextensionlist"
+	mv_conffile dansguardian "/etc/dansguardian/bannediplist" "/etc/dansguardian/lists/bannediplist"
+	mv_conffile dansguardian "/etc/dansguardian/bannedmimetypelist" "/etc/dansguardian/lists/bannedmimetypelist"
+	mv_conffile dansguardian "/etc/dansguardian/bannedphraselist" "/etc/dansguardian/lists/bannedphraselist"
+	mv_conffile dansguardian "/etc/dansguardian/bannedregexpurllist" "/etc/dansguardian/lists/bannedregexpurllist"
+	mv_conffile dansguardian "/etc/dansguardian/bannedsitelist" "/etc/dansguardian/lists/bannedsitelist"
+	mv_conffile dansguardian "/etc/dansguardian/bannedurllist" "/etc/dansguardian/lists/bannedurllist"
+	mv_conffile dansguardian "/etc/dansguardian/contentregexplist" "/etc/dansguardian/lists/contentregexplist"
+	mv_conffile dansguardian "/etc/dansguardian/exceptioniplist"  "/etc/dansguardian/lists/exceptioniplist"
+	mv_conffile dansguardian "/etc/dansguardian/exceptionphraselist" "/etc/dansguardian/lists/exceptionphraselist"
+	mv_conffile dansguardian "/etc/dansguardian/exceptionsitelist" "/etc/dansguardian/lists/exceptionsitelist"
+	mv_conffile dansguardian "/etc/dansguardian/exceptionurllist" "/etc/dansguardian/lists/exceptionurllist"
+	mv_conffile dansguardian "/etc/dansguardian/exceptionvirusextensionlist" "/etc/dansguardian/lists/contenscanners/exceptionvirusextensionlist"
+	mv_conffile dansguardian "/etc/dansguardian/exceptionvirusmimetypelist" "/etc/dansguardian/lists/contenscanners/exceptionvirusmimetypelist"
+	mv_conffile dansguardian "/etc/dansguardian/exceptionvirussitelist" "/etc/dansguardian/lists/contenscanners/exceptionvirussitelist"
+	mv_conffile dansguardian "/etc/dansguardian/exceptionvirusurllist" "/etc/dansguardian/lists/contenscanners/exceptionvirusurllist"
+	mv_conffile dansguardian "/etc/dansguardian/filtergroupslist" "/etc/dansguardian/lists/filtergroupslist"
+	mv_conffile dansguardian "/etc/dansguardian/greysitelist" "/etc/dansguardian/lists/greysitelist"
+	mv_conffile dansguardian "/etc/dansguardian/greyurllist" "/etc/dansguardian/lists/greyurllist"
+	mv_conffile dansguardian "/etc/dansguardian/pics" "/etc/dansguardian/lists/pics"
+	mv_conffile dansguardian "/etc/dansguardian/weightedphraselist" "/etc/dansguardian/lists/weightedphraselist"
+
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_dutch" "/etc/dansguardian/lists/phraselists/badwords/weighted_dutch"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_french" "/etc/dansguardian/lists/phraselists/badwords/weighted_french"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_german" "/etc/dansguardian/lists/phraselists/badwords/weighted_french"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_portuguese" "/etc/dansguardian/lists/phraselists/badwords/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_spanish" "/etc/dansguardian/lists/phraselists/badwords/weighted_spanish"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/chat/weighted" "/etc/dansguardian/lists/phraselists/chat/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/chat/weighted_italian" "/etc/dansguardian/lists/phraselists/chat/weighted_italian"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/drugadvocacy/weighted" "/etc/dansguardian/lists/phraselists/drugadvocacy/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/gambling/banned" "/etc/dansguardian/lists/phraselists/gambling/banned"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/gambling/banned_portuguese" "/etc/dansguardian/lists/phraselists/gambling/banned_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/gambling/weighted" "/etc/dansguardian/lists/phraselists/gambling/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/gambling/weighted_portuguese" "/etc/dansguardian/lists/phraselists/gambling/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/games/weighted" "/etc/dansguardian/lists/phraselists/games/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/exception" "/etc/dansguardian/lists/phraselists/goodphrases/exception"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/exception_email" "/etc/dansguardian/lists/phraselists/goodphrases/exception_email"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/weighted_general" "/etc/dansguardian/lists/phraselists/goodphrases/weighted_general"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/weighted_general_danish" "/etc/dansguardian/lists/phraselists/goodphrases/weighted_general_danish"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/weighted_general_portuguese" "/etc/dansguardian/lists/phraselists/goodphrases/weighted_general_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/weighted_news" "/etc/dansguardian/lists/phraselists/goodphrases/weighted_news"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/googlesearches/banned" "/etc/dansguardian/lists/phraselists/googlesearches/banned"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/gore/weighted" "/etc/dansguardian/lists/phraselists/gore/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/gore/weighted_portuguese" "/etc/dansguardian/lists/phraselists/gore/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/illegaldrugs/banned" "/etc/dansguardian/lists/phraselists/illegaldrugs/banned"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/illegaldrugs/banned_portuguese" "/etc/dansguardian/lists/phraselists/illegaldrugs/banned"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/illegaldrugs/weighted" "/etc/dansguardian/lists/phraselists/illegaldrugs/banned"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/illegaldrugs/weighted_portuguese" "/etc/dansguardian/lists/phraselists/illegaldrugs/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/intolerance/banned_portuguese" "/etc/dansguardian/lists/phraselists/intolerance/banned_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/intolerance/weighted" "/etc/dansguardian/lists/phraselists/intolerance/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/intolerance/weighted_portuguese" "/etc/dansguardian/lists/phraselists/intolerance/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/legaldrugs/weighted" "/etc/dansguardian/lists/phraselists/legaldrugs/weighted" 
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/malware/weighted" "/etc/dansguardian/lists/phraselists/malware/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/news/weighted" "/etc/dansguardian/lists/phraselists/news/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/nudism/weighted" "/etc/dansguardian/lists/phraselists/nudism/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/peer2peer/weighted" "/etc/dansguardian/lists/phraselists/peer2peer/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/personals/weighted" "/etc/dansguardian/lists/phraselists/personal/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/personals/weighted_portuguese" "/etc/dansguardian/lists/phraselists/personal/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/banned" "/etc/dansguardian/lists/phraselists/pornography/banned"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/banned_portuguese" "/etc/dansguardian/lists/phraselists/pornography/banned_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted" "/etc/dansguardian/lists/phraselists/pornography/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_danish" "/etc/dansguardian/lists/phraselists/pornography/weighted_danish"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_dutch" "/etc/dansguardian/lists/phraselists/pornography/weighted_dutch"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_french" "/etc/dansguardian/lists/phraselists/pornography/weighted_french"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_german" "/etc/dansguardian/lists/phraselists/pornography/weighted_german"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_italian" "/etc/dansguardian/lists/phraselists/pornography/weighted_italian"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_portuguese" "/etc/dansguardian/lists/phraselists/pornography/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_spanish" "/etc/dansguardian/lists/phraselists/pornography/weighted_spanish"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/proxies/weighted" "/etc/dansguardian/lists/phraselists/proxies/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/sport/weighted" "/etc/dansguardian/lists/phraselists/sport/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/violence/weighted" "/etc/dansguardian/lists/phraselists/violence/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/violence/weighted_portuguese" "/etc/dansguardian/lists/phraselists/violence/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/warezhacking/weighted" "/etc/dansguardian/lists/phraselists/warezhacking/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/weapons/weighted" "/etc/dansguardian/lists/phraselists/weapons/weighted"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/weapons/weighted_portuguese" "/etc/dansguardian/lists/phraselists/weapons/weighted_portuguese"
+	mv_conffile dansguardian "/etc/dansguardian/phraselists/webmail/weighted" "/etc/dansguardian/lists/phraselists/webmail/weighted"
+
+fi
+esac
+
+init_failed () 
+{
+	echo "WARNING: Starting dansguardian failed. Please check your configuration."
+}
+
+#DEBHELPER#

@@ -1,0 +1,19 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 03_add_unconfigures.dpatch by Alexander Wirt <formorer@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Don't start dansguardian if its not configured
+
+@DPATCH@
+diff -urNad dansguardian-2.9.9.3~/configs/dansguardian.conf.in dansguardian-2.9.9.3/configs/dansguardian.conf.in
+--- dansguardian-2.9.9.3~/configs/dansguardian.conf.in	2007-11-26 13:00:06.000000000 +0100
++++ dansguardian-2.9.9.3/configs/dansguardian.conf.in	2008-03-23 09:41:22.000000000 +0100
+@@ -2,6 +2,7 @@
+ 
+ # **NOTE** as of version 2.7.5 most of the list files are now in dansguardianf1.conf
+ 
++UNCONFIGURED - Please remove this line after configuration
+ 
+ # Web Access Denied Reporting (does not affect logging)
+ #
+

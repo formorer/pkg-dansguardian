@@ -1,0 +1,6 @@
+03_add_unconfigures.dpatch
+07_fix_config_paths.dpatch
+11_FixOptionContainer.cpp_on_arm.dpatch
+50_clamav095_support.dpatch
+60_add_gcc4.4_support.dpatch
+65-fix_clamdsocket.dpatch

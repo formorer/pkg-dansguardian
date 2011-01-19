@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD><TITLE>DansGuardian Brief Installation Guide</TITLE><META http-equiv="PICS-Label" content='(PICS-1.1 "http://www.icra.org/ratingsv02.html" l gen true for "http://dansguardian.org/" r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true for "http://dansguardian.org/" r (n 0 s 0 v 0 l 0))'></HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000FF">
+<H1 ALIGN=CENTER>DansGuardian Brief Installation Guide</H1>
+<P align=center>
+<STRONG>Tue 9th October 2001 - version 2.x.x</STRONG>
+<P>
+<H3>Installing from RPM</H3>
+<OL TYPE="1">
+<LI>Download the correct RPM for <a href="http://dansguardian.org/?page=download">DansGuardian 2</a>.
+<LI>If upgrading from an older version of DansGuardian, make a backup of your /etc/dansguardian directory.  Also stop running any old version.
+<LI>rpm -Uvh DansGuardian-2....rpm (fill in the blank) (--nodeps might be needed)
+<LI>Now edit the dansguardian.conf file to your liking paying special attention to the accessdeniedaddress option.
+</OL>
+<P>
+<H3>Installing from source</H3>
+<OL TYPE="1">
+<LI>Download the source for <a href="http://dansguardian.org/?page=download">DansGuardian 2</a>.
+<LI>If upgrading from an older version of DansGuardian, make a backup of your /etc/dansguardian directory.  Also stop running any old version.
+<LI>Untar with a 'tar -zxpf DansGuardian-2.....tar.gz' (fill in the blanks).
+<LI>cd into the new directory.
+<LI>Run the configure (./configure --help) script with the help option to see the user selectable settings.  Default settings are shown in []'s.
+<LI>Run the configure (./configure) script with your options, if any. (RedHat 6.2/7.0 users can leave the default settings.  Other users see below.
+<LI>Edit the Makefile and verify that all the directory settings are correct. If not, re-run the configure script.
+<LI>"make" will now build DansGuardian.
+<LI>"make install" will create the directory structure and install all the files in the chosen paths.
+<LI>"make clean" will remove the now un-needed binaries etc.
+<LI>Now edit the dansguardian.conf file to your liking paying special attention to the accessdeniedaddress option.
+</OL>
+<H4>Options</h4>
+You may change with the configure options:
+<table>
+<tr><td>bindir</td><td>(where the binary gets places)</td></tr>
+<tr><td>sysconfdir</td><td>(where the config and data files gets placed)</td></tr>
+<tr><td>sysvdir</td><td>(where the startup script gets placed)</td></tr>
+<tr><td>cgidir</td><td>(where the cgi-bin dir is located)</td></tr>
+<tr><td>mandir</td><td>(where the man docs get placed)</td></tr>
+<tr><td>logdir</td><td>(where the logs get placed)</td></tr>
+<tr><td>runas_usr</td><td>(the system user the daemon runs as)</td></tr>
+<tr><td>runas_grp</td><td>(the system group the daemon runs as)</td></tr>
+<tr><td>piddir</td><td>(where the pid file gets placed)</td></tr>
+</table>
+<P>
+The INSTALL file included within the source tarball gives all this information as well as example options for FreeBSD, OpenBSD, Mandrake, SuSE, etc
+<P>
+<H3>Nearly finished</H3>
+You need to make DansGuardian start up when the server reboots.  For linux this means use your favourite SysV editor to stick DansGuardian in run level 5 and 3 at about 92, if chkconfig/rpm has not already done this for you.
+<P>
+Also you need to rotate the logs once a week.  As root, crontab -e and set the log rotation script up as follows:<br>
+<code>59 23 * * sun /etc/dansguardian/logrotation</code><br>I.e 23:59 every sunday.  Or as pleases you.  Note, the path may be different.  You don't have to use my splendid script and could use any method you want so long as it stops DansGuardian first, rotates then starts it again.
+<P>
+<H3>Finally</H3>
+<P>The port it listens on by default is 8080.  It uses port 3128 on Squid.  To manually start it run /etc/rc.d/init.d/dansguardian start.  Use stop to stop it.
+For all support issues, join the <A HREF="http://groups.yahoo.com/group/dansguardian" target="_blank">mailing list</A> and post your question or comment there.  Everyone would like to know of success or failure as this may help them.  The messages also act as an archive of information that may get put into the FAQ.
+<P>If you feel your message is not suitable for public viewing and is private (for example asking for pricing or other commercial issues) then email me direct.  My address is author at dansguardian dot org.
+</BODY>
+</HTML>

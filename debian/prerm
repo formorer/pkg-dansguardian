@@ -1,0 +1,8 @@
+#! /bin/sh -e
+
+init_failed ()
+{
+        echo "WARNING: Stopping dansguardian failed! Upgrade or removal may be incomplete!" 
+}
+
+#DEBHELPER#

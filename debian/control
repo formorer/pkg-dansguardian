@@ -1,0 +1,26 @@
+Source: dansguardian
+Section: web
+Priority: optional
+Maintainer: Alexander Wirt <formorer@debian.org>
+Build-Depends: debhelper (>= 5), zlib1g-dev, autotools-dev, dpatch, libclamav-dev (>= 0.90), libpcre3-dev
+Standards-Version: 3.8.4
+
+Package: dansguardian
+Architecture: any
+Depends: ${shlibs:Depends}, perl, adduser, clamav (>= 0.80), ${misc:Depends} 
+Suggests: squid, clamav-freshclam
+Description: Web content filtering
+ DansGuardian filters the content of pages based on many methods
+ including phrase matching, PICS filtering and URL filtering. It does
+ not purely filter based on a banned list of sites.
+ .
+ It provides real-time virus scanning capabilities for content access.
+ .
+ DansGuardian is designed to be completely flexible and allows you to tailor
+ the filtering to your exact needs. It can be as draconian or as
+ unobstructive as you want. The default settings are geared towards what a
+ primary school might want but DansGuardian puts you in control of what you
+ want to block.
+ .
+ DansGuardian requires squid or another similar caching proxy server
+ on your local network.

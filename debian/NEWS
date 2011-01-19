@@ -1,0 +1,50 @@
+dansguardian (2.9.9.3-1) unstable; urgency=low
+
+  This is the first upload of the new dansguardian 2.9 tree. It changes
+  several things: 
+
+  - there is no loger a patch needed for antivirussupport. Unfortunatly 
+    that means that the old configuration syntax is not valid any more. 
+    On the other hand this version has support for icap and
+    commandlinescanners. For configuration details see
+    /etc/dansguardian/contentscanners. 
+
+  - Nearly all configuration files were moved to /etc/dansguardian/lists. 
+    I did my beѕt to made the migration as painless as possible. But if you 
+    renamed filterfiles or had custom ones they could not get moved
+    automatically. Please look into /etc/dansguardian/lists and
+    /etc/dansguardian⁄dansgardianf1.conf how to integrate them into
+    Dansguardian 2.9. 
+
+  - Since there were so many changes and new features its recommended to
+    start with a new config (this means dansguardian.conf and
+    dansguardianf1.conf, not your filter files). An automatic migration is
+    unfortunatly not possible. 
+
+ -- Alexander Wirt <formorer@debian.org>  Mon, 24 Mar 2008 15:55:54 +0100
+
+dansguardian (2.8.0.6-antivirus-6.4.4-1) unstable; urgency=low
+
+   The option tricklescanlength has been renamed to forkscanlength. 
+   Please change this in your configuration file. 
+
+ -- Alexander Wirt <formorer@debian.org>  Sun, 22 Oct 2006 17:49:05 +0200
+
+dansguardian (2.8.0.6-antivirus-6.3.8-1) unstable; urgency=low
+
+  I included Aecio F. Neto antiviruspatch for dansguardian, this makes it
+  possible to scan websites and file for viruses using the clamav engine. 
+  You will have to adapt your config with the new antivirus options. See
+  /usr/share/doc/README.AV for more informations. 
+  Its not possible to use clamd or kapersky antivirus with the debian package,
+  because the code has to be patched to get another engine working. 
+
+ -- Alexander Wirt <formorer@debian.org>  Thu, 18 Aug 2005 09:11:10 +0200
+dansguardian (2.9.9.3-1) unstable; urgency=low
+
+   The option tricklescanlength has been renamed to forkscanlength. 
+   Please change this in your configuration file. 
+
+  
+
+ -- Alexander Wirt <formorer@debian.org>  Mon, 24 Mar 2008 15:55:54 +0100

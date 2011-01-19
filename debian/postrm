@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+if [ "$1" = "purge" ]; then
+	deluser dansguardian > /dev/null || true
+	rm -rf /var/log/dansguardian
+	rm -rf /etc/dansguardian
+fi
+
+#DEBHELPER#

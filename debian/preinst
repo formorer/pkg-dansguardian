@@ -1,0 +1,145 @@
+#! /bin/sh
+# preinst script for dansguardian
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# Prepare to move a conffile without triggering a dpkg question
+# (stolen from debian wiki) 
+prep_mv_conffile() {
+    PKGNAME="$1"
+    CONFFILE="$2"
+    if [ -e "$CONFFILE" ]; then
+        md5sum="$(md5sum "$CONFFILE" | sed -e 's/ .*//')"
+        old_md5sum="$(dpkg-query -W -f='${Conffiles}' $PKGNAME | sed -n -e "\\' ${CONFFILE} '{s/ obsolete$//;s/.* //p}")"
+        if [ "$md5sum" = "$old_md5sum" ]; then
+	    echo "rm $CONFFILE"
+            rm -f "$CONFFILE"
+        fi
+    fi
+}
+
+rm_conffile() {
+    PKGNAME="$1"
+    CONFFILE="$2"
+    if [ -e "$CONFFILE" ]; then
+        md5sum="$(md5sum "$CONFFILE" | sed -e 's/ .*//')"
+        old_md5sum="$(dpkg-query -W -f='${Conffiles}' $PKGNAME | sed -n -e "\\' $CONFFILE'{s/ obsolete$//;s/.* //p}")"
+        if [ "$md5sum" != "$old_md5sum" ]; then
+            echo "Obsolete conffile $CONFFILE has been modified by you."
+            echo "Saving as $CONFFILE.dpkg-bak ..."
+            mv -f "$CONFFILE" "$CONFFILE".dpkg-bak
+        else
+            echo "Removing obsolete conffile $CONFFILE ..."
+            rm -f "$CONFFILE"
+        fi
+    fi
+}
+
+# summary of how this script can be called:
+#        * <new-preinst> `install'
+#        * <new-preinst> `install' <old-version>
+#        * <new-preinst> `upgrade' <old-version>
+#        * <old-preinst> `abort-upgrade' <new-version>
+
+case "$1" in
+    install|upgrade)
+	if dpkg --compare-versions "$2" le "dansguardian_2.8.0.6-antivirus-6.4.4.1-4"; then
+		prep_mv_conffile dansguardian "/etc/dansguardian/bannedextensionlist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/bannediplist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/bannedmimetypelist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/bannedphraselist" 
+		prep_mv_conffile dansguardian "/etc/dansguardian/bannedregexpurllist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/bannedsitelist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/bannedurllist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/banneduserlist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/contentregexplist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptioniplist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptionphraselist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptionsitelist" 
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptionurllist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptionuserlist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptionvirusextensionlist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptionvirusmimetypelist" 
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptionvirussitelist" 
+		prep_mv_conffile dansguardian "/etc/dansguardian/exceptionvirusurllist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/filtergroupslist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/greysitelist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/greyurllist"
+		prep_mv_conffile dansguardian "/etc/dansguardian/pics" 
+		prep_mv_conffile dansguardian "/etc/dansguardian/weightedphraselist"
+
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_dutch"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_french"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_german"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/badwords/weighted_spanish"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/chat/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/chat/weighted_italian"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/drugadvocacy/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/gambling/banned"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/gambling/banned_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/gambling/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/gambling/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/games/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/exception"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/exception_email"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/weighted_general"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/weighted_general_danish"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/weighted_general_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/goodphrases/weighted_news"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/googlesearches/banned"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/gore/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/gore/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/illegaldrugs/banned"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/illegaldrugs/banned_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/illegaldrugs/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/illegaldrugs/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/intolerance/banned_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/intolerance/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/intolerance/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/legaldrugs/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/malware/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/news/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/nudism/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/peer2peer/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/personals/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/personals/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/banned"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/banned_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_danish"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_dutch"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_french"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_german"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_italian"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/pornography/weighted_spanish"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/proxies/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/sport/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/violence/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/violence/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/warezhacking/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/weapons/weighted"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/weapons/weighted_portuguese"
+		prep_mv_conffile dansguardian "/etc/dansguardian/phraselists/webmail/weighted"
+
+		#this is now in /usr/share where is belongs to
+		rm_conffile dansguardian "/etc/dansguardian/transparent1x1.gif"
+		#this was dgav specific 
+		rm_conffile dansguardian "/etc/dansguardian/dlmgrextensionlist"
+		#this is now handled by authplugins itself... no replacement
+		rm_conffile dansguardian "/etc/dansguardian/banneduserlist"
+		rm_conffile dansguardian "/etc/dansguardian/exceptionuserlist"
+	fi
+	;;
+    abort-upgrade)
+	;;
+    *)
+        echo "preinst called with unknown argument \`$1'" >&2
+        exit 0
+	;;
+esac
+
+#DEBHELPER#

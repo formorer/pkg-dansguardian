@@ -1,0 +1,2 @@
+dansguardian: non-standard-executable-perm usr/lib/cgi-bin/dansguardian.pl 0655 != 0755
+dansguardian: dir-or-file-in-var-lock var/lock/subsys/

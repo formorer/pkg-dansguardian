@@ -1,0 +1,51 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 60_add_gcc4.4_support.dpatch by Martin Michlmayr <tbm@cyrius.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Adds support for gcc4.4 (#505386)
+
+@DPATCH@
+diff -urNad dansguardian-2.9.9.8~/src/contentscanners/clamav.cpp dansguardian-2.9.9.8/src/contentscanners/clamav.cpp
+--- dansguardian-2.9.9.8~/src/contentscanners/clamav.cpp	2008-06-10 11:41:41.000000000 +0200
++++ dansguardian-2.9.9.8/src/contentscanners/clamav.cpp	2009-06-14 11:28:16.000000000 +0200
+@@ -33,6 +33,7 @@
+ #include <unistd.h>
+ #include <clamav.h>
+ #include <fcntl.h>
++#include <cstdio>
+ 
+ 
+ // GLOBALS
+diff -urNad dansguardian-2.9.9.8~/src/contentscanners/commandlinescan.cpp dansguardian-2.9.9.8/src/contentscanners/commandlinescan.cpp
+--- dansguardian-2.9.9.8~/src/contentscanners/commandlinescan.cpp	2008-06-10 11:47:55.000000000 +0200
++++ dansguardian-2.9.9.8/src/contentscanners/commandlinescan.cpp	2009-06-14 11:28:16.000000000 +0200
+@@ -35,6 +35,7 @@
+ #include <sys/wait.h>
+ #include <unistd.h>
+ #include <list>
++#include <cstdio>
+ 
+ 
+ // GLOBALS
+diff -urNad dansguardian-2.9.9.8~/src/contentscanners/icapscan.cpp dansguardian-2.9.9.8/src/contentscanners/icapscan.cpp
+--- dansguardian-2.9.9.8~/src/contentscanners/icapscan.cpp	2008-06-10 11:41:51.000000000 +0200
++++ dansguardian-2.9.9.8/src/contentscanners/icapscan.cpp	2009-06-14 11:28:16.000000000 +0200
+@@ -36,6 +36,7 @@
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <netdb.h>		// for gethostby
++#include <cstdio>
+ 
+ 
+ // DEFINES
+diff -urNad dansguardian-2.9.9.8~/src/downloadmanagers/fancy.cpp dansguardian-2.9.9.8/src/downloadmanagers/fancy.cpp
+--- dansguardian-2.9.9.8~/src/downloadmanagers/fancy.cpp	2008-06-10 11:41:25.000000000 +0200
++++ dansguardian-2.9.9.8/src/downloadmanagers/fancy.cpp	2009-06-14 11:28:16.000000000 +0200
+@@ -32,6 +32,7 @@
+ #include <unistd.h>
+ #include <iostream>
+ #include <math.h>
++#include <cstdio>
+ 
+ 
+ // GLOBALS

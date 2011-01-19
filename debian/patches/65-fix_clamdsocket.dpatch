@@ -1,0 +1,19 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 65-editconfig.dpatch by Alexander Wirt <formorer@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fix clamdsocket path
+
+@DPATCH@
+diff -urNad dansguardian-2.10.1.1~/configs/contentscanners/clamdscan.conf.in dansguardian-2.10.1.1/configs/contentscanners/clamdscan.conf.in
+--- dansguardian-2.10.1.1~/configs/contentscanners/clamdscan.conf.in	2008-11-18 12:27:04.000000000 +0100
++++ dansguardian-2.10.1.1/configs/contentscanners/clamdscan.conf.in	2010-02-13 20:33:07.000000000 +0100
+@@ -1,7 +1,7 @@
+ plugname = 'clamdscan'
+ 
+ # edit this to match the location of your ClamD UNIX domain socket
+-#clamdudsfile = '/var/run/clamav/clamd.sock'
++clamdudsfile = '/var/run/clamav/clamd.ctl'
+ 
+ # If this string is set, the text it contains shall be removed from the
+ # beginning of filenames when passing them to ClamD.

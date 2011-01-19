@@ -1,0 +1,19 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## fix_config_paths.dpatch by Alexander Wirt <formorer@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fix config paths for language files
+
+@DPATCH@
+diff -urNad dansguardian-2.9.9.3~/configs/dansguardian.conf.in dansguardian-2.9.9.3/configs/dansguardian.conf.in
+--- dansguardian-2.9.9.3~/configs/dansguardian.conf.in	2007-11-26 13:00:06.000000000 +0100
++++ dansguardian-2.9.9.3/configs/dansguardian.conf.in	2008-03-22 22:25:50.000000000 +0100
+@@ -20,7 +20,7 @@
+ # and easier to customise the access denied page.
+ # The language file is used no matter what setting however.
+ #
+-languagedir = '@DGDATADIR@/languages'
++languagedir = '@DGCONFDIR@/languages'
+ 
+ # language to use from languagedir.
+ language = 'ukenglish'

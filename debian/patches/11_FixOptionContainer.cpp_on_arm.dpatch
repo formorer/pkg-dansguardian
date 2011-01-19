@@ -1,0 +1,39 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 11_FixOptionContainer.cpp_on_arm.dpatch by Alexander Wirt <formorer@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: If you need to iterate through all lines in the
+##     config file to find a field, at least don't abuse the configfile deque
+##     by accessing it as if it was an array with signed index.
+##     Works way better on arm, too, i.e. closes: #493047.
+
+@DPATCH@
+diff -urNad dansguardian-2.9.9.7~/src/OptionContainer.cpp dansguardian-2.9.9.7/src/OptionContainer.cpp
+--- dansguardian-2.9.9.7~/src/OptionContainer.cpp	2008-08-18 09:57:46.000000000 +0200
++++ dansguardian-2.9.9.7/src/OptionContainer.cpp	2008-10-13 09:23:20.000000000 +0200
+@@ -662,8 +662,10 @@
+ 	String temp;
+ 	String temp2;
+ 	String o(option);
+-	for (int i = 0; i < (signed) conffile.size(); i++) {
+-		temp = conffile[i].c_str();
++	for (std::deque<std::string>::iterator i = conffile.begin(); i != conffile.end(); i++) {
++		if ((*i).empty())
++			continue;
++		temp = (*i).c_str();
+ 		temp2 = temp.before("=");
+ 		while (temp2.endsWith(" ")) {	// get rid of tailing spaces before =
+ 			temp2.chop();
+@@ -696,8 +698,10 @@
+ 	String temp2;
+ 	String o(option);
+ 	std::deque<String > results;
+-	for (int i = 0; i < (signed) conffile.size(); i++) {
+-		temp = conffile[i].c_str();
++	for (std::deque<std::string>::iterator i = conffile.begin(); i != conffile.end(); i++) {
++		if ((*i).empty())
++			continue;
++		temp = (*i).c_str();
+ 		temp2 = temp.before("=");
+ 		while (temp2.endsWith(" ")) {	// get rid of tailing spaces before =
+ 			temp2.chop();

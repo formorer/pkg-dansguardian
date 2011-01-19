@@ -1,0 +1,477 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0059)http://dansguardian.org/downloads/detailedinstallation.html -->
+<HTML><HEAD><TITLE>DansGuardian Detailed Installation Guide</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META http-equiv=PICS-Label 
+content='(PICS-1.1 "http://www.icra.org/ratingsv02.html" l gen true for "http://dansguardian.org/" r (cz 1 lz 1 nz 1 oz 1 vz 1) "http://www.rsac.org/ratingsv01.html" l gen true for "http://dansguardian.org/" r (n 0 s 0 v 0 l 0))'>
+<META content="Microsoft FrontPage 4.0" name=GENERATOR></HEAD>
+<BODY text=#000000 link=#0000ff bgColor=#ffffff>
+<H1 align=center>DansGuardian 2.2.x Detailed Installation Guide</H1>
+<P align=center><strong>Tue 26th March 2002 - Draft 4a</strong> 
+<P align=center><strong>Originally by Daniel Barron, modified by GB</strong> 
+<H2>Contents</H2>
+<UL>
+  <LI><a href="#overview">Overview</a> 
+
+  <LI><a href="#prerequisites">Prerequisites</a> 
+
+  <LI><a href="#collecting">Collecting 
+  what you need</a> 
+  <LI><a href="#installation">Installation 
+  and compilation</a> 
+  <LI><a href="#further">Further 
+  customisation - configuration options</a> 
+  <LI><a href="#squid">Squid 
+  configuration</a> 
+  <LI><a href="#client">Client 
+  Configuration</a> 
+  <LI><a href="#support">Support</a> 
+  </LI></UL>
+<H2>&nbsp;</H2>
+<H2><A name=overview>Overview</A></H2>This is not a HOWTO. This document is an attempt at detailed installation instructions for
+DansGuardian 2.2.x. If you just want 
+to get DansGuardian up and running as quickly as possible, you might want to 
+read the <A href="http://dansguardian.org/?page=documentation">brief 
+installation guide</A>.
+<H2>&nbsp;</H2>
+<H2><A name=prerequisites>Prerequisites</A></H2>You must already be running a fairly recent
+distribution of Linux, FreeBSD, OpenBSD, Solaris or SuSE. You 
+also need to have <STRONG>squid</STRONG> running and configured on port 3128. 
+<P>DansGuardian is a filtering pass-through that sits between the client browser 
+and the Squid proxy. It listens on port 8080 and connects to squid on port 3128.
+So you must have no other daemon running already using port 8080. 
+<P>You will need a web server. Apache (httpd) that comes with RedHat 6.2 is 
+absolutely perfect and you would be hard pushed to find a better web server. The 
+server is used to display a cgi perl script that gives the user notification of 
+an 'Access Denied'. 
+<P>You will need the standard development tools installed such as 
+<STRONG>glibc</STRONG>, 
+<STRONG> autoconf</STRONG>, 
+<STRONG> gcc</STRONG> and <STRONG>make</STRONG>. Debian users will also require <b>zlib1g-dev</b>.
+The default Redhat 6.2 
+installation and most others come with these installed so you don't need to 
+worry about them. 
+<P>Most of the time during this work you will need to be logged on as <b>root</b>. A 
+more experienced user will be able to determine when, however for most people - 
+stay logged on as root for the entirety. 
+<P>Make sure you have all of the above installed and working before you 
+continue. 
+<H2>&nbsp;</H2> 
+<H2><A name=collecting>Collecting what you need</A></H2> 
+<P>Obviously, you need DansGuardian. You can download it from here: <a href="http://dansguardian.org/?page=download">DansGuardian</a>,
+or from the <a href="http://backup.dansguardian.org/?page=download">US mirror</a> site. 
+<p>It is recommended that you download and install from the source as this
+is always the most up to date.&nbsp; However, packages are available for some
+distributions. For the purpose of these instructions, we shall be installing
+from the source.</p>
+<H2>&nbsp;</H2>
+<H2><A name=installation>Installation and compilation</A></H2>
+<P>If you just want to quickly get on with the installation and avoid all this 
+detail, don't forget you can simply follow the <A 
+href="http://dansguardian.org/?page=documentation">brief installation guide</A>. 
+
+<p>1. Download DansGuardian-2.2.*.source.tar.gz into a temporary area, and
+untar with a <b>tar -zxpf</b>.&nbsp; This will create the subdirectory
+DansGuardian-2.2.*.</p><p>DansGuardian uses gnu autoconf, auto-generating the
+Makefile with the "configure" script.</p><p>2. <b>cd</b> into this new directory. Run the configure
+script with the help option (<b>./configure --help</b>) to see the user
+selectable settings (see table below).</p>
+<table border="0" width="439" height="421">
+  <tr>
+    <td width="62">
+      <h4>option</h4>
+    </td>
+    <td width="258" height="42">
+      <h4>description</h4>
+    </td>
+    <td width="97" height="42">
+      <h4>default value</h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="62"><p>bindir</p></td>
+    <td width="258" height="42">where the binary gets placed</td>
+    <td width="97" height="42">/usr/sbin/</td>
+  </tr>
+  <tr>
+    <td width="62"><p>sysconfdir</p></td>
+    <td width="258" height="42">where the config and data files gets placed</td>
+    <td width="97" height="42">/etc/dansguardian/</td>
+  </tr>
+  <tr>
+    <td width="62"><p>sysvdir</p></td>
+    <td width="258" height="42">where the startup script gets placed</td>
+    <td width="97" height="42">/etc/rc.d/init.d/</td>
+  </tr>
+  <tr>
+    <td width="62"><p>cgidir</p></td>
+    <td width="258" height="42">where the cgi-bin dir is located</td>
+    <td width="97" height="42">/home/httpd/cgi-bin/</td>
+  </tr>
+  <tr>
+    <td width="62"><p>mandir</p></td>
+    <td width="258" height="42">where the man docs get placed</td>
+    <td width="97" height="42">/usr/man/</td>
+  </tr>
+  <tr>
+    <td width="62"><p>logdir</p></td>
+    <td width="258" height="42">&nbsp;where the logs get place</td>
+    <td width="97" height="42">/var/log/dansguardian/</td>
+  </tr>
+  <tr>
+    <td width="62"><p>runas_usr</p></td>
+    <td width="258" height="42">the system user the daemon runs as</td>
+    <td width="97" height="42">nobody</td>
+  </tr>
+  <tr>
+    <td width="62"><p>runas_grp</p></td>
+    <td width="258" height="42">the system group the daemon runs as</td>
+    <td width="97" height="42">nobody</td>
+  </tr>
+  <tr>
+    <td width="62"><p>piddir</p></td>
+    <td width="258" height="43">where the pid file gets placed</td>
+    <td width="97" height="43">/var/run/</td>
+  </tr>
+</table>
+<p>3. Run configure with the appropriate options. For examples, see
+section&nbsp; <a href="http://dansguardian.org/downloads/detailedinstallation2.html#ConfigureScripts">Example
+Configure Scripts</a> below.</p>
+<p>RedHat 6.2 and 7.0 users can run
+configure with the default
+settings.	RedHat 7.1 and 7.2 will have to change their cgidir option. Solaris,
+OpenBSD and FreeBSD will have to set just about all settings.<br>
+</p><p>4. Edit the Makefile and verify that all the settings are correct. If not, re-run the configure script.
+If you don't understand Makefiles, skip this step.<br>
+<br>
+5. Run <b>make</b>  to build DansGuardian (<b>gmake</b> for Solaris).<br>
+<br>
+6. Run <b>make install</b>  to create the directory structure, install all the files in the chosen
+paths and set permissions as appropriate.<br>
+<br>
+7. Doing a <b>make clean </b> will remove the now un-needed binaries etc.<br>
+<br>
+8. When a page is denied, DansGuardian redirects to a cgi perl script on your web server to report to the user. This makes it easy to customise the message. This server does not need to be the same machine as the DansGuardian filter server, however if it is not local you will need to amend or comment out the perl script copying line in the Makefile.</p><p>
+To configure the address of your web server that will display the access denied perl
+script, edit the accessdeniedaddress within dansguardian.conf (see sysconfdir
+above).&nbsp; For further
+configuration options, see the&nbsp;<A 
+href="http://dansguardian.org/downloads/detailedinstallation.html#further">Options</A> 
+section.
+</p> 
+<P>9. The last thing that we need to do is configure the log rotation. Log rotation
+ensures that the filesystem does not fill up with a huge log file. Most daemons that log such as httpd and squid rotate their 
+logs once a week. With DansGuardian, there are five log files: access.log, access.log.1,
+access.log.2 ... and so on up to 4.&nbsp; Once a week,
+the oldest of the five log files is deleted, and the remaining logs' names are
+incremented by one, and a new access.log is created. The 
+Makefile copies a log rotation script to the configuration directory. We need to
+schedule this script to run once a week, so (as root) do a <b> <CODE>crontab -e</CODE>  </b> and enter the 
+following: <PRE>59 23 * * sat /etc/dansguardian/logrotation
+</PRE>
+ <p>Then save. This will schedule it for 23:59 every Saturday. Of course you can
+ schedule the log rotation differently or edit the script to your own liking.
+</p>
+<P>DansGuardian is now ready to go. You can start it by just running the binary
+(ie just type <b>dansguardian</b> and hit return).  You can stop it with a <b>dansguardian
+-q</b>.  Or you can use the SysV(-like) script provided. Run a <b>dansguardian
+-h</b> to see other command line options available.<br>
+<br>
+<h2><b><a name="ConfigureScripts">Example Configure Scripts</a></b></h2>
+<p>Here
+are some examples of options for the configure script for different
+distributions:</p><p><b>FreeBSD</b><br>
+A standard configure script that should work, provided you have installed FreeBSD and the associated programs in their default locations.<br>
+<br>
+    ./configure --cgidir=/usr/local/www/cgi-bin/ \<br>
+--sysconfdir=/usr/local/etc/dansguardian/ \<br>
+--sysvdir=/usr/local/etc/rc.d/ \<br>
+--bindir=/usr/local/sbin/ \<br>
+--mandir=/usr/local/man/<br>
+<br>
+<b>OpenBSD</b><br>
+A standard configure script that should work, provided you have installed OpenBSD and the associated programs in their default locations.<br>
+<br>
+    ./configure --cgidir=/var/www/cgi-bin/ \<br>
+	--sysconfdir=/usr/local/etc/dansguardian/ \<br>
+	--sysvdir=/usr/local/etc/rc.d/ \<br>
+	--bindir=/usr/sbin/ \<br>
+	--mandir=/usr/share/man/</p><p><b>RedHat 6.2/7.0<br>
+</b>It is safe to run the configure (./configure) script with the defaults.<br>
+<br>
+<b>RedHat 7.1/7.2<br>
+</b>    ./configure --sysconfdir=/usr/local/etc/dansguardian/ \<br>
+	--sysvdir=/etc/rc.d/init.d/ \<br>
+	--cgidir=/var/www/cgi-bin/<br>
+<br>
+<b>Mandrake 7.2</b><br>
+    ./configure --mandir=/usr/share/man/<br>
+<br>
+<b>Mandrake 8/8.1<br>
+</b>    ./configure --mandir=/usr/share/man/ \<br>
+        --cgidir=/var/www/cgi-bin/<br>
+<br>
+The system user 'squid' might be also appropriate rather than 'nobody' when configuring your
+system's
+"runas" option.</p><p><b>SuSE 7.2<br>
+</b>    ./configure --runas_grp=nogroup \<br>
+        --cgidir=/usr/local/httpd/cgi-bin/<br>
+<br>
+<b>SuSE 7.3</b><br>
+    ./configure --runas_grp=nogroup \<br>
+        --cgidir=/usr/local/httpd/cgi-bin/ \<br>
+        --sysvdir=/etc/init.d/<br>
+</p><p><b>Solaris</b><br>
+Only Solaris 8 (7/01) has been tested.  DansGuardian requires the GNU version of make (gmake), and GCC version 2.95.3 (3.01
+may work but is as yet untested and not recommended).<br>
+<br>
+Both gmake and GCC 2.95.3 are included with the OS on the "Companion CD", and are usually installed in
+/opt/sfw/bin.  To ensure these are in your path, simply do (in csh; bash syntax is different):<br>
+<br>
+    setenv PATH /opt/sfw/bin\:$PATH<br>
+<br>
+To configure and compile, do:<br>
+    ./configure --bindir=/opt/dansguardian/sbin/ \<br>
+        --sysconfdir=/opt/dansguardian/etc/ \<br>
+        --sysvdir=/etc/init.d/ \<br>
+        --cgidir=/var/apache/cgi-bin/ \<br>
+        --mandir=/opt/dansguardian/man/ \<br>
+--logdir=/opt/dansguardian/log/<br>
+<br>
+<br>
+</p>
+<H2><A name=further>Further customisation - configuration 
+options</A></H2>DansGuardian is highly configurable. The source code is provided 
+so you have the ultimate in configurability, although most people will be content with 
+modifying the configuration files. If you do modify the source code 
+please send what you've done to Daniel. 
+<P>After you have modified any configuration file, to apply the changes you will 
+need to restart DansGuardian. To do this run the sysv script with the restart
+option.&nbsp; For example, for RedHat type the following in a terminal: 
+<P><TT>/etc/rc.d/init.d/dansguardian restart</TT> 
+<P><tt>or for OpenBSD:</tt><P><tt>/usr/local/etc/rc.d/dansguardian.sh restart</tt> 
+<P>Alternatively, run a <b>dansguardian -q </b>followed by a <b>dansguardian</b>. 
+<P>There is one main configuration file, several banned lists and an exception 
+list. These are all explained below: 
+<H3>exceptionsitelist</H3>This contains a list of domain endings that if found
+in the requested URL, DansGuardian will not filter the page. Note that you
+should not put the <b>httpd:// </b>or the <b>www.</b> at the beginning of the
+entries.
+<H3>exceptioniplist</H3>This contains a list of client IPs who you want to 
+bypass the filtering. For example, the network administrator's computer's IP. 
+<h3>
+exceptionuserlist</h3>
+<P>Usernames who will not be filtered (basic authentication or ident must be enabled).
+<H3>bannedphraselist</H3>This contains a list of banned phrases. The phrases 
+must be enclosed between &lt; and &gt;. DansGuardian is supplied with an example 
+list. You can not use phrases such as &lt;sex&gt; as this will block sites such 
+as Middlesex University. The phrases can contain spaces. Use them to your 
+advantage. This is the most useful part of DansGuardian and will catch more 
+pages than PICS and URL filtering put together.
+<P>Combinations of phrases can also be used, 
+which if they are all found in a page, it is blocked.
+<H3>bannedmimetypelist</H3>This contains a list of banned MIME-types. If a URL 
+request returns a MIME-type that is in this list, DansGuardian will block it. 
+DansGuardian comes with some example MIME-types to deny. This is a good way of 
+blocking inappropriate movies for example. It is obviously unwise to ban the 
+MIME-types text/html or image/*.
+<H3>bannedextensionlist</H3>This contains a list of banned file extensions. If a 
+URL ends in an extension that is in this list, DansGuardian will block it. 
+DansGuardian comes with some example file extensions to deny. This is a good way 
+of blocking kiddies from downloading those lovely screen savers and hacking 
+tools. You are a fool if you ban the file extension .html, or .jpg etc. 
+<h3>
+bannedregexpurllist</h3>
+<P>
+This contains a list of banned regular expression URLs.&nbsp; For more
+information on regular expressions, click <a href="http://www.opengroup.org/onlinepubs/7908799/xbd/re.html">here</a>. 
+<h3>
+bannedsitelist</h3>
+<P>This file contains a list of banned sites.&nbsp; Entering a domain name here
+bans the entire site.&nbsp; For banning specific parts of a site, see
+bannedurllist. Also, you can have a blanket ban all sites except those
+specifically excluded in exceptionsitelist. You can also block sites specified
+only as an IP address, and include a stock squidGuard blacklists collection. To
+enable these blacklists, download them from the extras section <a href="http://dansguardian.org/?page=extras">here</a>.
+Simply put them somewhere appropriate, un-comment the squidGuard blacklists collection
+lines at the bottom of the bannedsitelist file, and check the paths are correct.
+For URL blacklists, edit the <b>bannedurllist </b>in a similar way. 
+<h3>
+bannedurllist</h3>
+<P>This allows you to block specific parts of a site rather than the whole
+site.&nbsp; To block an entire site, see bannedsitelist. To enable squidGuard
+blacklists for URLs, you will need to download the blacklists and edit the squidGuard blacklists collection
+section at the bottom (as for <b>bannedsitelist</b> above).
+<h3>pics</h3>This file allows you to finely tune the PICS filtering. Each 
+PICS section comes with a description of the allowed settings and what they 
+represent. The default settings with DansGuardian are set for youngish children,
+for example mild profanities and artistic nudity are allowed.
+<p>For more detailed information on PICS ratings, click <a href="http://www.w3.org/PICS/">here</a>.</p>
+<h4>ICRA</h4>
+<p>The ICRA section is fairly self-explanatory.&nbsp; A value of 0 means nothing
+of that category is allowed, whereas a value of 1 allows it. For example,</p>
+<p>ICRAnudityartistic = 1</p>
+<p>allows nude art. For more in-depth information see <a href="http://www.rsac.org/">here</a>.</p>
+<h4> RSAC&nbsp;</h4>
+<p>RSAC is an older version of ICRA. The values here range from 0 meaning none
+allowed, through 2 (the default value), to 4, which allows wanton and gratuitous
+amounts of the given category. For more in-depth information see <a href="http://www.rsac.org/">here</a>.</p>
+<h4>evaluWEB</h4>
+<p>evaluWEB rating uses a system similar to the British Film classification
+system:</p>
+<p>0 = U (<b>U</b>niversal, ie. suitable for even the youngest viewer)</p>
+<p>1 = PG (<b>P</b>arental <b>G</b>uidance recommended)</p>
+<p>2 = 18 (Only suitable for viewers aged <b>18 </b>and over)<br>
+</p>
+<h4>SafeSurf</h4>
+<p>Similar to RSAC, but containing a larger range of categories with the range
+from 0 = full filtering to 9 = wanton and gratuitous. For more in-depth
+information, see <a href="http://www.safesurf.com/">here</a>.</p>
+<h4><br>
+Weburbia</h4>
+<p>See evaluWEB. For more in-depth information, see <a href="http://www.weburbia.com/safe/index.shtml">here</a>.</p>
+<h4><br>
+Vancouver Webpages</h4>
+<p>This is yet another ratings scheme.&nbsp; See <a href="http://vancouver-webpages.com/VWP1.0/">here</a>
+for more information.</p>
+<H3>&nbsp;</H3>
+<H3>dansguardian.conf</H3>
+<p>The only setting that is vital for you to configure in the 
+dansguardian.conf file is the <b> accessdeniedaddress </b> setting. You should set this 
+to the address (<b>not</b> the file path) of your Apache server with the perl access denied reporting 
+script. For most people this will be the same server as squid and DansGuardian. 
+If you really want you can change this address to a normal html static page on 
+any server.</p>
+<H4>Reporting Level</H4>You can change the reporting level for when a page 
+gets denied. It can say just 'Access Denied', or report why, or report why and what
+the denied phrase is. The latter may be more useful for testing, but the middler would be more 
+useful in a school environment. Stealth mode logs what would be denied but
+doesn't do any blocking.
+<H4>Logging Settings</H4>This setting lets you configure the logging level. You can log nothing, just denied pages, text based 
+and all requests. HTTPS requests only get logged when the logging is set to 3 - 
+all requests.
+<H4>Network Settings</H4>These allow you to modify the IP address that
+DansGuardian is listening on, the port DansGuardian listens on, the IP address of the server 
+running squid as well as the squid port. 
+It is possible to configure the Access Denied reporting page here also.
+<H4>Content Filtering Settings</H4>Here you can modify the location of the list 
+files. Adjusting these locations is not recommended. 
+<h4><b> Reverse Lookups for Banned Sites and URLs</b></h4>
+If set to on, DansGuardian will look up the forward DNS for an IP URL address and search for both in the
+banned site and URL lists.  This would prevent a user from simply entering the IP
+for a banned address. It will reduce searching speed somewhat so unless you have a local caching
+DNS server, leave it off and use the Blanket IP Block option in the bannedsitelist file instead.
+<h4> Build bannedsitelist and bannedurllist Cache Files</h4>
+This will compare the date stamp of the list file with the date stamp of the
+cache file and will recreate as needed. If a bsl or bul .processed file exists,
+then that will be used instead. It will increase process start speed by 300%. On
+slow computers this will be significant. Fast computers do not need this option.
+<h4> POST protection (web upload and forms)</h4>
+This is for blocking or limiting uploads, not for blocking forms without any file
+upload.
+The value is given in kilobytes after MIME encoding and header information.
+<h4>Username identification methods (used in logging)</h4>
+The proxyauth option is for when basic proxy authentication is used (obviously
+no good for   transparent proxying). The ntlm option is for when the proxy supports the MS NTLM authentication.&nbsp;
+This only works with IE5.5 sp1 and later, and has not been implemented yet. The ident
+option causes DansGuardian to try to connect to an identd server on the computer
+originating the request.
+<h4>Forwarded For</h4>
+This option adds an X-Forwarded-For: &lt;clientIP&gt; to the HTTP request header.  This may help
+solve some problem sites that need to know the source IP.
+<h4>Max Children</h4>
+<p>This sets the maximum number of processes to spawn to handle the incoming connections.  This will prevent DoS attacks killing the server with
+too many spawned processes. On large sites you might want to double or triple this number.</p>
+<h4>Log Connection Handling Errors</h4>
+<p>This option logs some debug info regarding fork()ing and accept()ing which can usually be ignored.  These are logged by syslog.  It is safe to leave<br>
+this setting on or off.</p>
+<p>&nbsp;</p>
+<H2><A name=squid>Squid configuration</A></H2>There is none that is 
+<EM>required</EM> as DansGuardian appears to squid just as a normal web browser. 
+However... 
+<P>We need to make sure that squid will not allow client browsers to bypass 
+DansGuardian. This is a non trivial problem. What I will assume is that you have 
+already blocked open web access (via firewall IP tables and IP chains) and the only way to access the web is through 
+squid and hence DansGuardian. This goal is achievable in a number of ways.
+<H3>squid.conf method</H3>
+<P>You can modify the acl rules so that only localhost has access. In my 
+squid.conf I had the following lines:
+<PRE># INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
+#
+acl localnet src 192.168.42.0/255.255.255.0
+http_access allow localnet
+http_access allow localhost
+http_access deny all</PRE>
+<P>So I remmed out both the localnet lines with a #. I believe that the default 
+configuration of squid is to only have localhost allowed so you probably don't 
+even have to do this. 
+<P>With proxy authentication things get a little bit more complex. With no 
+DansGuardian in my squid.conf I have: <PRE>authenticate_program /usr/bin/smb_auth -W DOMAIN -U 192.168.0.2
+acl domainusers proxy_auth REQUIRED
+http_access allow domainusers
+http_access deny all
+</PRE>Which allows authenticated users to access the proxy from anywhere. 
+<P>However, it makes sense to let SSL through without going 
+through DansGuardian, yet at the same time still prevent bypassing DansGuardian
+on other ports. 
+So the same section became: <PRE>authenticate_program /usr/bin/smb_auth -W DOMAIN -U 192.168.0.2
+acl domainusers proxy_auth REQUIRED
+acl linuxserver src 192.168.0.1/255.255.255.255
+acl ntserver src 192.168.0.2/255.255.255.255
+http_access allow linuxserver
+http_access allow ntserver
+http_access allow domainusers localhost
+http_access allow CONNECT SSL_ports
+http_access deny all
+</PRE>So for all web access (SSL or not) the user is required to be 
+authenticated, but SSL is allowed to bypass DansGuardian. I also allow the NT 
+and Linux servers to bypass the filtering and access squid directly.
+<H3>ipchains method 1</H3>You could redirect incoming requests on port 3128 from 
+the local net to port 8080 while still allowing incoming from the localhost to 
+access 3128. More specific detail is currently beyond the scope of these 
+instructions.
+<H3>ipchains method 2 - sneaky method</H3>A really sneaky method would be to 
+configure squid to work as a transparent proxy and redirect all port 80 traffic 
+to port 8080. You would want to include method 1 as well. More specific detail 
+is currently beyond the scope of these instructions. There are <A 
+href="http://dansguardian.org/?page=howto">HOWTOs</A> that cover this.
+<p>&nbsp;</p>
+<H2><A name=client>Client Configuration</A></H2>
+<H3>Simple config</H3>
+<P>Let's assume you have a Linux server at IP 192.168.0.1 which is a caching web
+proxy and intranet web server. On this server you have DansGuardian 
+installed listening on port 8080. 
+<P>You need to configure the client browser for http proxy 192.168.0.1 with port 
+8080. You can configure ftp the same as http - it is reported to work. That's 
+it. But for efficiency you might want to set the 'no proxy on' to your local 
+Apache server address - 192.168.0.1 in this case. If you've got DNS working, you 
+can use the DNS address of your local server. I tend not to. 
+<P>
+<H3>Sneaky Config</H3>If you've used the sneaky method to configure squid then 
+there should be no configuration required. Configure your browser for no proxy 
+and maybe set the 'no proxy on' to your local Apache server address - 
+192.168.0.1 in this case. 
+<P>
+<H3>Beebug(Daniel's) Config</H3>This could be known as super sneaky I suppose. 
+The problem with the simple config method is that you have to configure by hand 
+every browser. This is a pain and is why the sneaky method is really quite 
+good.<BR>The way Beebug solve this is by using a custom in-house Visual Basic application that 
+loads upon login and modifies the needed Windows registry and various files so 
+that IE and Netscape (including email) are configured automatically. 
+It's so good, you can just stick a copy of Netscape on a server in a share and 
+run this program at login and it automatically just works on all the PCs. No 
+installation and a central copy so it's easy to update.<BR>It also has other 
+features such as removing unwanted bits such as web folders, GMT/BST auto 
+switching (already done by login script), app data, and other fixes.<BR>Unless I 
+persuade the directors to release it open source you can't use this method 
+without paying or writing your own. And guess who wrote this - yes - the
+DansGuardian author! <BR><BR>
+<H2><A name=support>Support</A></H2>For all support issues, join the <A 
+target=_blank href="http://groups.yahoo.com/group/dansguardian">mailing list</A> 
+and post your question or comment there. 
+<P>If you feel your message is not suitable for public viewing and is private
+(for example asking for pricing or other commercial issues) then email me 
+direct. My address is daniel at jadeb dot com. 
+<P>You can also get further help from the DansGuardian web site <A 
+href="http://dansguardian.org/">dansguardian.org</A>. 
+<P>Any comments about this document, email gb at dansguardian dot org. </P></BODY></HTML>
