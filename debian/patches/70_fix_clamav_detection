@@ -1,0 +1,18 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 70_fix_clamav_datection.dpatch by Dan Chen <seven.steps@gmail.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fix clamav detection in configure.ac
+
+@DPATCH@
+--- dansguardian-2.10.1.1.orig/configure.ac
++++ dansguardian-2.10.1.1/configure.ac
+@@ -333,7 +333,7 @@
+ 	CLAMAVSHM="!! Not supported on this platform !!"
+ else
+ 	AC_MSG_RESULT(yes)
+-	PKG_CHECK_MODULES([CLAMAV],[libclamav >= 4])
++	PKG_CHECK_MODULES([CLAMAV],[libclamav >= 0.95])
+ 
+ 	AC_DEFINE([HAVE_CLAMAV],[],[Define to enable ClamAV content scanner])
+ 	
