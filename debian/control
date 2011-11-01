@@ -2,7 +2,7 @@ Source: dansguardian
 Section: web
 Priority: optional
 Maintainer: Alexander Wirt <formorer@debian.org>
-Build-Depends: debhelper (>= 5), zlib1g-dev, autotools-dev, dpatch, libclamav-dev (>= 0.90), libpcre3-dev
+Build-Depends: debhelper (>= 5), zlib1g-dev, autotools-dev, dpatch, libclamav-dev (>= 0.90), libpcre3-dev, dh-autoreconf
 Standards-Version: 3.8.4
 
 Package: dansguardian

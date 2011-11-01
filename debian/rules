@@ -1,150 +1,34 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
-
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
 
 # Include dpatch stuff.
 include /usr/share/dpatch/dpatch.make
 
-# These are used for cross-compiling and for saving the configure script
-# from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-DEB_HOST_ARCH       ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+%:
+	dh $@ --with dpatch,autotools_dev,autoreconf
 
-#ifeq ($(DEB_HOST_ARCH),ia64)
-#  CC  = gcc-2.96
-#  CXX = g++-2.96
-#else
-#  CC  = gcc-2.95
-#  CXX = g++-2.95
-#endif
-
-ifeq ($(DEB_HOST_ARCH),$(findstring $(DEB_HOST_ARCH),alpha ia64 s390))
-  CXX += -DUSE_SOCKLEN_TYPE
-endif
-
-ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -g
-endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
-
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	cp -p /usr/share/misc/config.* .
-	# Add here commands to configure the package.
-	CC=$(CC) CXX="$(CXX)" /bin/bash ./configure \
-		--mandir=/usr/share/man/ \
+override_dh_auto_configure:
+	./configure \
+		--prefix=/usr \
 		--enable-clamav=yes \
 		--enable-clamd=yes \
 		--with-proxyuser=dansguardian \
 		--with-proxygroup=dansguardian \
-		--prefix=/usr \
-		--mandir=\$${prefix}/share/man \
-		--infodir=\$${prefix}/share/info \
 		--sysconfdir=/etc \
 		--localstatedir=/var \
 		--enable-icap=yes \
 		--enable-commandline=yes \
-		--enable-trickledm=yes \
 		--enable-email=yes \
-		--enable-ntlm=yes 
+		--enable-trickledm=yes \
+		--mandir=\$${prefix}/share/man \
+		--infodir=\$${prefix}/share/info
 
-#--host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE)
-	touch configure-stamp
-
-
-build: build-stamp
-
-build-stamp: patch-stamp configure-stamp
-	dh_testdir
-
-	# Add here commands to compile the package.
-	$(MAKE) CPP="$(CXX)" 
-	#/usr/bin/docbook-to-man debian/dansguardian-2.2.10.sgml > dansguardian-2.2.10.1
-
-	touch build-stamp
-
-clean: clean1 unpatch
-clean1: unpatch configure-stamp
-	dh_testdir
-	dh_testroot
-	rm -f configure-stamp build-stamp
-	rm -rf debian/tmp
-	rm -f config.guess config.sub
-	
-	# Add here commands to clean up after the build process.
-	[ ! -f Makefile ] || $(MAKE) distclean
-
-	dh_clean
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_clean -k
-	dh_installdirs \
-		usr/share/doc/dansguardian \
-		var/lock/subsys
-
-	# Installing lintian overrides
-	for LINTIAN in debian/lintian/*; \
-	do \
-		install -D -m 644 $$LINTIAN debian/`basename $$LINTIAN`/usr/share/lintian/overrides/`basename $$LINTIAN` || exit 1; \
-	done
-
-	# Add here commands to install the package into debian/dansguardian-2.2.10.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/dansguardian
-	
-	#gunzip -c dansguardian.8.gz | gzip -9c > \
-	#	debian/dansguardian/usr/share/man/man8/dansguardian.8.gz
-	
+override_dh_auto_install:
+	dh_auto_install
 	mv debian/dansguardian/usr/share/dansguardian/languages/ debian/dansguardian/etc/dansguardian/
 	mv debian/dansguardian/usr/share/dansguardian/dansguardian.pl debian/dansguardian/usr/lib/cgi-bin/
 	chmod 755 debian/dansguardian/usr/lib/cgi-bin/dansguardian.pl
-
-	#this are useless for debian
 	rm -rf debian/dansguardian/usr/share/dansguardian/scripts/
 	rm -f debian/dansguardian/etc/dansguardian/logrotation
 
-
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-clean: clean1 unpatch
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-#	dh_installdebconf
-	dh_installdocs
-	dh_installexamples
-	dh_installmenu
-	dh_installlogrotate
-	dh_installinit --error-handler=init_failed  
-	dh_installcron
-	dh_installman
-	dh_installinfo
-	dh_install
-#	dh_undocumented
-	dh_installchangelogs
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-#	dh_makeshlibs
-	dh_installdeb
-#	dh_perl
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install \
-	patch unpatch 
+override_dh_installinit:
+	dh_installinit --error-handler=init_failed
