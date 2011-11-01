@@ -4,3 +4,4 @@
 50_clamav095_support.dpatch
 60_add_gcc4.4_support.dpatch
 65-fix_clamdsocket.dpatch
+70_fix_clamav_detection
