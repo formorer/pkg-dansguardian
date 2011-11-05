@@ -1,3 +1,23 @@
+dansguardian (2.10.1.1-4) unstable; urgency=low
+
+  * [42dcd6d] Install subdirs
+  * [5643aa6] use dh_lintian
+  * [d9eae0e] Move from classic debhelper to dh
+  * [2269451] Raise dh compat level
+  * [4256464] Patch configure.ac to fix clamav detection.
+    Thanks to Dan Chen for the patch (Closes: #646903)
+  * [4295784] Add Vcs headers
+  * [cedb4a7] Bump debhelper dependency to 8
+  * [8f24e4e] bump standards version
+  * [3ad2dee] remove unused patches
+  * [27145cd] Fix compilation with gcc 4.6.
+    Thanks to Dan Chen for the patch (Closes: 624996)
+  * [02ba68c] remove leftovers
+  * [2cb93ad] Reenable ntlm
+  * [7c8296c] Remove old stuff in postinst (Closes: #646901)
+
+ -- Alexander Wirt <formorer@debian.org>  Sat, 05 Nov 2011 21:19:57 +0100
+
 dansguardian (2.10.1.1-3) unstable; urgency=low
 
   * Fix restart in init script (Closes: #605934)
