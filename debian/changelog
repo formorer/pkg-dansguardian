@@ -13,7 +13,6 @@ dansguardian (2.10.1.1-4) unstable; urgency=low
   * [27145cd] Fix compilation with gcc 4.6.
     Thanks to Dan Chen for the patch (Closes: 624996)
   * [02ba68c] remove leftovers
-  * [2cb93ad] Reenable ntlm
   * [7c8296c] Remove old stuff in postinst (Closes: #646901)
 
  -- Alexander Wirt <formorer@debian.org>  Sat, 05 Nov 2011 21:19:57 +0100
