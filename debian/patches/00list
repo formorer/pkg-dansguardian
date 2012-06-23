@@ -6,3 +6,4 @@
 65-fix_clamdsocket.dpatch
 70-gcc4.6.dpatch
 70_fix_clamav_detection
+80_fix_libcre3_max_sub_expression_allocation
