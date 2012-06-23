@@ -1,3 +1,10 @@
+VIRUS SCANNING WITH CLAMD
+=========================
+
+If you use dansguardian with clamd take care clamd is able
+to read the dansguardian tempfiles. Something like
+`usermod -a -G dansguardian clamav` should work.
+
 LICENSING ISSUES
 ================
 Thanks to Daniel Barron <daniel@jadeb.com> for this piece of software!
