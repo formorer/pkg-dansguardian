@@ -1,7 +1,7 @@
 This package was debianized by Jonathan Hall <jonhall@futureks.net> on
 Mon, 17 Jun 2002 21:14:35 -0500.
 
-It as downloaded from http://dansguardian.org/ 
+It as downloaded from http://dansguardian.org/
 
 Upstream Author: Daniel Barron <daniel@jadeb.com>
 
@@ -22,4 +22,3 @@ this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
 St, Fifth Floor, Boston, MA 02110-1301, USA.  On Debian systems, the complete
 text of the GNU General Public License, can be found in
 /usr/share/common-licenses/GPL.
-

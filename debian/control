@@ -2,15 +2,21 @@ Source: dansguardian
 Section: web
 Priority: optional
 Maintainer: Alexander Wirt <formorer@debian.org>
-Build-Depends: debhelper (>= 8), zlib1g-dev, autotools-dev, dpatch (>= 2.0.32~), libclamav-dev (>= 0.90), libpcre3-dev, dh-autoreconf
+Build-Depends: autotools-dev,
+               debhelper (>= 8),
+               dh-autoreconf,
+               dpatch (>= 2.0.32~),
+               libclamav-dev (>= 0.90),
+               libpcre3-dev,
+               zlib1g-dev
 Standards-Version: 3.9.2
 Vcs-Browser: https://github.com/formorer/pkg-dansguardian
 Vcs-Git: git://github.com/formorer/pkg-dansguardian.git
 
 Package: dansguardian
 Architecture: any
-Depends: ${shlibs:Depends}, perl, adduser, clamav (>= 0.80), ${misc:Depends} 
-Suggests: squid, clamav-freshclam
+Depends: adduser, clamav (>= 0.80), perl, ${misc:Depends}, ${shlibs:Depends}
+Suggests: clamav-freshclam, squid
 Description: Web content filtering
  DansGuardian filters the content of pages based on many methods
  including phrase matching, PICS filtering and URL filtering. It does
