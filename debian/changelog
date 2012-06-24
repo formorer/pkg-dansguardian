@@ -1,3 +1,16 @@
+dansguardian (2.10.1.1-5) unstable; urgency=low
+
+  * [0a5a03b] Add support for "status" action to init.d script.
+    Thanks to Peter Eisentraut for the patch (Closes: #647870)
+  * [f41be8c] Don't allocate memory up to reg.re_nsub (Closes: #667664, #673691)
+  * [2ebb4bb] Remove obsolete preinst script (Closes: #597961)
+  * [3d01758] Document grouphandling for clamdscan (Closes: #544654)
+  * [0da0019] Add versioned dpatch dependency
+  * [05242c0] wrap-and-sort
+  * [817abff] Use dh9 for hardening
+
+ -- Alexander Wirt <formorer@debian.org>  Sun, 24 Jun 2012 09:02:21 +0200
+
 dansguardian (2.10.1.1-4) unstable; urgency=low
 
   * [42dcd6d] Install subdirs
