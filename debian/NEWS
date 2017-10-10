@@ -3,7 +3,7 @@ dansguardian (2.9.9.3-1) unstable; urgency=low
   This is the first upload of the new dansguardian 2.9 tree. It changes
   several things: 
 
-  - there is no loger a patch needed for antivirussupport. Unfortunatly 
+  - there is no loger a patch needed for antivirussupport. Unfortunately
     that means that the old configuration syntax is not valid any more. 
     On the other hand this version has support for icap and
     commandlinescanners. For configuration details see
@@ -19,7 +19,7 @@ dansguardian (2.9.9.3-1) unstable; urgency=low
   - Since there were so many changes and new features its recommended to
     start with a new config (this means dansguardian.conf and
     dansguardianf1.conf, not your filter files). An automatic migration is
-    unfortunatly not possible. 
+    unfortunately not possible.
 
  -- Alexander Wirt <formorer@debian.org>  Mon, 24 Mar 2008 15:55:54 +0100
 
