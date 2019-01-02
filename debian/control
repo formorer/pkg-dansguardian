@@ -11,7 +11,7 @@ Build-Depends: autotools-dev,
                zlib1g-dev
 Standards-Version: 3.9.2
 Vcs-Browser: https://github.com/formorer/pkg-dansguardian
-Vcs-Git: git://github.com/formorer/pkg-dansguardian.git
+Vcs-Git: https://github.com/formorer/pkg-dansguardian.git
 
 Package: dansguardian
 Architecture: any

@@ -42,7 +42,7 @@ dansguardian (2.10.1.1-2) unstable; urgency=low
   * Force debsource 1.0
   * Update copyright file (Closes: #567263)
   * Fix clamdsocket in clamdscan.conf (Closes: #544656)
-  * Use settings from configfile for chown ops 
+  * Use settings from configfile for chown ops
     (Closes: #419989) Thanks to Игорь Чумак for the patch
 
  -- Alexander Wirt <formorer@debian.org>  Sat, 13 Feb 2010 09:32:09 +0100
@@ -62,7 +62,7 @@ dansguardian (2.9.9.7-2.1) unstable; urgency=low
 
   * Non-maintainer upload.
   * Added patch for clamav 0.95/libclamav6 support
-    - added debian/patches/50_clamav095_support.dpatch 
+    - added debian/patches/50_clamav095_support.dpatch
 
  -- Imre Gergely <gimre@narancs.net>  Sun, 19 Apr 2009 09:42:35 +0300
 
@@ -86,7 +86,7 @@ dansguardian (2.9.9.7-1) unstable; urgency=low
 
 dansguardian (2.9.9.3-2) unstable; urgency=low
 
-  * This time build with gcc 4.3 (Closes: #454889) 
+  * This time build with gcc 4.3 (Closes: #454889)
 
  -- Alexander Wirt <formorer@debian.org>  Sun, 06 Apr 2008 14:47:06 +0200
 
@@ -100,7 +100,7 @@ dansguardian (2.9.9.3-1) unstable; urgency=low
     #396321, #474420)
   * Move configfiles to a new place
   * Bump standards version (no changes)
-  * Remove 01_unrpmize (dansguardian now uses autotools) 
+  * Remove 01_unrpmize (dansguardian now uses autotools)
   * Updated copyright file
   * Remove 04_clamav-0.90-API.dpatch, 05_kfreebsd.dpatch,
     06_gcc4.3.dpatch they are not used anymore
@@ -144,10 +144,10 @@ dansguardian (2.8.0.6-antivirus-6.4.4.1-1) unstable; urgency=medium
 
 dansguardian (2.8.0.6-antivirus-6.4.4-1) unstable; urgency=medium
 
-  * New av plugin release 
+  * New av plugin release
     - Proper autocleaning (Closes: #377983)
   * Bumped standards version
-  * Depend on clamav (>= 0.80) 
+  * Depend on clamav (>= 0.80)
   * Fix typo in description (Closes: #363224)
 
  -- Alexander Wirt <formorer@debian.org>  Sun, 22 Oct 2006 16:56:11 +0200
@@ -161,17 +161,17 @@ dansguardian (2.8.0.6-antivirus-6.3.8-1-1) unstable; urgency=low
  -- Alexander Wirt <formorer@debian.org>  Wed, 17 Aug 2005 14:30:31 +0200
 
 dansguardian (2.8.0.4-2.1) unstable; urgency=low
- 
+
   * Non-Maintainer Upload (BSP 2005-08-07).
   * Fixed FTBFS by applying patch from Matt Kraai (Closes: #319568).
- 
+
  -- Uwe Hermann <uwe@debian.org>  Sun,  7 Aug 2005 14:21:46 +0200
 
 dansguardian (2.8.0.4-2) unstable; urgency=low
 
-  * Added --oknodo to start-stop-daemon to get restarting 
+  * Added --oknodo to start-stop-daemon to get restarting
     working if it isn't started before (Closes: #303762)
-    Thanks to Kevin Traas for the patch 
+    Thanks to Kevin Traas for the patch
 
  -- Alexander Wirt <formorer@debian.org>  Fri,  8 Apr 2005 21:02:42 +0200
 
@@ -189,7 +189,7 @@ dansguardian (2.8.0.3-1) unstable; urgency=low
     now solved from upstream
   * Dansguardian builds now clean with gcc-3.4 (Closes: #258592)
   * Make logrotate more silent (Closes: #180318)
- 
+
 
  -- Alexander Wirt <formorer@debian.org>  Mon, 27 Sep 2004 18:57:06 +0200
 
